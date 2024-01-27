@@ -6,11 +6,14 @@
 
 // struct to save all valid commands
 struct Command{
-    char command_name[MAX_COMMAND_LEN];
-    int max_arg;
+    const char *command_name;
+    int min_argc;
+    int max_argc;
+    const char *usage_help;
+    int (*function)(int argc, char *argv[]);
 };
 
-extern struct Command GIT_commands_list[COMMANDS_COUNT];
+extern struct Command *GIT_commands_list;
 
 // struct to save user data
 struct UserData{

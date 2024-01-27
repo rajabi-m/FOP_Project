@@ -11,9 +11,6 @@
 #define GIT_FOLDER_NAME ".giga-git"
 
 
-// configs related to Commands
-#define COMMANDS_COUNT 2
-#define MAX_COMMAND_LEN 20
 
 
 // configs related to user
@@ -24,8 +21,15 @@
 #define GLOBAL_CONFIG_DIR "/home/mahdi-rajabi/.config/giga-git"
 #define LOCAL_CONFIG_DIR "config"
 #define USERDATA_CONFIG_FILE "userdata.gigachad"
-#define MAX_ALIAS_COUNT 50
+#define MAX_ALIAS_COUNT 100
 #define ALIAS_FILE "alias.sigma"
 
 // technical configs
 #define MAX_PATH_LEN 1024
+#define MAX_COMMAND_LEN 40
+
+// usage help for commands
+
+#define GIT_USAGE "you dont know how to use giga-git :/"
+
+#define CONFIG_COMMAND_USAGE "just enter the config things from project doc :/"

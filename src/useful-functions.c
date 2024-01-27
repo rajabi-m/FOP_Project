@@ -16,6 +16,19 @@ bool areArgsValid(int argc, char *argv[]){
         return printError("you sould enter at least one arg :/");
     }
 
+    
+    
+
+    for (int i = 0; GIT_commands_list[i].command_name ; i++) // this for actually means until the end of commands
+    {
+        if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
+            if (argc > GIT_commands_list[i].max_argc || argc < GIT_commands_list[i].min_argc){
+                printError(GIT_commands_list[i].usage_help);
+            }
+            return true;
+        }
+    }
+
     for (int i = 0;i < GIT_alias_count; i++)
     {
         if (areStringsEqual(argv[1], GIT_alias_list[i].name)){
@@ -26,20 +39,8 @@ bool areArgsValid(int argc, char *argv[]){
             return true;
         }
     }
-    
 
-    for (int i = 0; i < COMMANDS_COUNT; i++)
-    {
-        if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
-            if (argc > GIT_commands_list[i].max_arg){
-                printError("maximum args exeeded for this command");
-                return false;
-            }
-            return true;
-        }
-    }
-
-    printError("invalid command");
+    printError(GIT_USAGE);
     return false;
     
     
@@ -71,8 +72,6 @@ char *findGitParentDir(){
     
 }
 
-
-// my enhanced string functions
 
 
 
@@ -110,3 +109,56 @@ void freeTokens(TokenArray *tokenArray) {
 }
 
 // all copyright to Mohammad Mahdi Rjabai Robat (XD just kidding)
+
+// look at this nice parse command function that i made just right now :)
+
+TokenArray parseCommand(const char *command){
+    
+    TokenArray before = gigaStrtok(command, " ");
+    TokenArray after = {NULL, 0};
+    int final_index = 0;
+    for (int i = 0; i < before.count; i++, final_index ++)
+    {
+        after.count ++;
+        after.tokens = realloc(after.tokens, after.count * sizeof(char *));
+
+        after.tokens[after.count - 1] = strdup(before.tokens[i]);
+
+        if(before.tokens[i][0] == '"'){
+            
+            if (before.tokens[i][strlen(before.tokens[i]) - 1] != '"'){
+                bool reached_end = false;
+                for(i++; i < before.count; i++){
+                    after.tokens[after.count - 1] = realloc(after.tokens[after.count - 1], strlen(after.tokens[after.count - 1]) + strlen(before.tokens[i]) + 2);
+                    strcat(after.tokens[after.count - 1], " ");
+                    strcat(after.tokens[after.count - 1], before.tokens[i]);
+                    if (before.tokens[i][strlen(before.tokens[i]) - 1] == '"'){
+                        reached_end = true;
+                        break;
+                    }
+                }
+            
+
+                if (!reached_end){
+                    TokenArray error = {NULL, 0};
+                    return error;
+                }
+            }
+            
+        }
+    }
+
+    for (int i = 0; i < after.count; i++) // removing double quots
+    {
+        if (after.tokens[i][0] == '"' && after.tokens[i][strlen(after.tokens[i] - 1)] == '"'){
+            char *new_string = strdup(after.tokens[i] + 1);
+            new_string[strlen(new_string) - 1] = '\0';
+            free(after.tokens[i]);
+            after.tokens[i] = new_string;
+        }
+    }
+    
+    
+    
+    return after;
+}

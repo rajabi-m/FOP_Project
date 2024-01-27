@@ -21,6 +21,7 @@ typedef struct {
 
 TokenArray gigaStrtok(const char *str, const char *delimiters);
 void freeTokens(TokenArray *tokenArray);
+TokenArray parseCommand(const char *command);
 
 
 #endif

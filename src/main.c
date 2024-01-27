@@ -5,7 +5,7 @@ int main(){
 
 
     int argc;
-    char *argv[] = {"giga-git","mmd", "0-0"};
+    char *argv[] = {"giga-git","abbas", "0-0"};
 
     for (int i = 0; ; i++)
     {
@@ -27,9 +27,13 @@ int main(){
         exit(EXIT_FAILURE);
     }
 
-    if (areStringsEqual(argv[1], "config")){
-        return GIT_Config(argc, argv);
+    for (int i = 0; GIT_commands_list[i].command_name; i++)
+    {
+        if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
+            return GIT_commands_list[i].function(argc, argv);
+        }
     }
+    
 
     for (int i = 0; i < GIT_alias_count; i++)
     {

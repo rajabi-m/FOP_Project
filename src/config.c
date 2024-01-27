@@ -55,45 +55,6 @@ int GIT_Config(int argc, char *argv[]){
     return EXIT_SUCCESS;
 }
 
-int createAlias(const char *name, const char *command, const bool is_global){
-    // this function still does not have the ability to create folders by itself (but will be soon :) )
-    struct Alias new_alias;
-    strcpy(new_alias.name, name); // setting alias name
-
-    TokenArray args_array = gigaStrtok(command, " ");
-    if (!areArgsValid(args_array.count, args_array.tokens)){
-        freeTokens(&args_array);
-        exit(EXIT_FAILURE);
-    }
-
-    // copying alias args and argc
-    for (int i = 0; i < args_array.count; i++)
-    {
-        strcpy(new_alias.argv[i], args_array.tokens[i]);
-    }
-    
-    new_alias.argc = args_array.count;
-    
-    freeTokens(&args_array);
-
-    char alias_file_path[MAX_PATH_LEN];
-    if (is_global){
-        sprintf(alias_file_path, "%s/%s", GLOBAL_CONFIG_DIR, ALIAS_FILE);
-    }else{
-        sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
-    }
-
-    FILE *alias_file = fopen(alias_file_path, "ab");
-    if(!alias_file){
-        printError("could not open or create the alias file :/ ");
-        exit(EXIT_FAILURE);
-    }
-
-    fwrite(&new_alias, sizeof(new_alias), 1, alias_file);
-
-    fclose(alias_file);
-
-}
 
 int changeUserData(const char *variable, const char *value, const bool is_global){
     // finding user data file path and oppenning it
@@ -199,6 +160,48 @@ int loadUserData(){
 
     fclose(user_data_file);
 }
+
+
+int createAlias(const char *name, const char *command, const bool is_global){
+    // this function still does not have the ability to create folders by itself (but will be soon :) )
+    struct Alias new_alias;
+    strcpy(new_alias.name, name); // setting alias name
+
+    TokenArray args_array = parseCommand(command);
+    if (!areArgsValid(args_array.count, args_array.tokens)){
+        freeTokens(&args_array);
+        exit(EXIT_FAILURE);
+    }
+
+    // copying alias args and argc
+    for (int i = 0; i < args_array.count; i++)
+    {
+        strcpy(new_alias.argv[i], args_array.tokens[i]);
+    }
+    
+    new_alias.argc = args_array.count;
+    
+    freeTokens(&args_array);
+
+    char alias_file_path[MAX_PATH_LEN];
+    if (is_global){
+        sprintf(alias_file_path, "%s/%s", GLOBAL_CONFIG_DIR, ALIAS_FILE);
+    }else{
+        sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
+    }
+
+    FILE *alias_file = fopen(alias_file_path, "ab");
+    if(!alias_file){
+        printError("could not open or create the alias file :/ ");
+        exit(EXIT_FAILURE);
+    }
+
+    fwrite(&new_alias, sizeof(new_alias), 1, alias_file);
+
+    fclose(alias_file);
+
+}
+
 
 // function to load GIT_alias_list
 int loadAliasList(){
