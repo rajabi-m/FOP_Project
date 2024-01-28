@@ -213,6 +213,7 @@ int loadAliasList(){
     FILE *alias_file = fopen(alias_file_path, "rb");
 
     int loaded_alias_count = 0;
+    GIT_alias_list = malloc(sizeof(struct Alias));
     if (!alias_file){
         debug(("no global alias file found! please use 'config --global alias.*' to create one\n"));
         return EXIT_FAILURE;
@@ -220,10 +221,11 @@ int loadAliasList(){
 
     for (loaded_alias_count = 0;fread(&GIT_alias_list[loaded_alias_count], sizeof(struct Alias), 1, alias_file); loaded_alias_count++)
     {
-        if (loaded_alias_count >= MAX_ALIAS_COUNT){
-            printError("maximum alias count exeeded");
-            exit(EXIT_FAILURE);
-        }
+        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 1) * sizeof(struct Alias));
+        // if (loaded_alias_count >= MAX_ALIAS_COUNT){
+        //     printError("maximum alias count exeeded");
+        //     exit(EXIT_FAILURE);
+        // }
     }
     
     GIT_alias_count = loaded_alias_count;
@@ -248,10 +250,11 @@ int loadAliasList(){
 
     for (loaded_alias_count = 0;fread(&GIT_alias_list[loaded_alias_count], sizeof(struct Alias), 1, alias_file); loaded_alias_count++)
     {
-        if (loaded_alias_count >= MAX_ALIAS_COUNT){
-            printError("maximum alias count exeeded");
-            exit(EXIT_FAILURE);
-        }
+        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 1) * sizeof(struct Alias));
+        // if (loaded_alias_count >= MAX_ALIAS_COUNT){
+        //     printError("maximum alias count exeeded");
+        //     exit(EXIT_FAILURE);
+        // }
     }
     GIT_alias_count = loaded_alias_count;
 

@@ -1,21 +1,26 @@
 #include "include.h"
 
+int doCommand(struct Alias *alias);
+
 
 int main(){
 
-
-    int argc;
-    char *argv[] = {"giga-git","abbas", "0-0"};
-
-    for (int i = 0; ; i++)
-    {
-        if (areStringsEqual(argv[i], "0-0")){
-            argc = i;
-            break;
-        }
-    }
+    char command[] = "giga-git config -g user.name ali";
+    TokenArray tokenized = parseCommand(command);
     
-// int main(int argc, char const *argv[]){
+
+    int argc = tokenized.count;
+    char **argv = tokenized.tokens;
+
+    // for (int i = 0; ; i++)
+    // {
+    //     if (areStringsEqual(argv[i], "0-0")){
+    //         argc = i;
+    //         break;
+    //     }
+    // }
+    
+// int main(int argc, char *argv[]){
 
     GIT_parent_dir = findGitParentDir();
     debug(("git path = %s\n", GIT_parent_dir));
@@ -38,7 +43,7 @@ int main(){
     for (int i = 0; i < GIT_alias_count; i++)
     {
         if (areStringsEqual(argv[1], GIT_alias_list[i].name)){
-            // return main(GIT_alias_list[i].argc, GIT_alias_list[i].argv); does not work while debugging
+            return doCommand(&GIT_alias_list[i]);
             debug(("alias found : %s\n", GIT_alias_list[i].name));
             return 0;
         }
@@ -46,4 +51,27 @@ int main(){
     
     
     return 0;
+}
+
+// temperory things to fix alias
+
+char **fixedAliasArgv(struct Alias *alias){
+    char **res = malloc(alias->argc * sizeof(char *));
+    for (int i = 0; i < alias->argc; i++)
+    {
+        res[i] = strdup(alias->argv[i]);
+    }
+    
+    return res;
+}
+
+int doCommand(struct Alias *alias){
+    
+
+    for (int i = 0; GIT_commands_list[i].command_name; i++)
+    {
+        if (areStringsEqual(alias->argv[1], GIT_commands_list[i].command_name)){
+            return GIT_commands_list[i].function(alias->argc, fixedAliasArgv(alias));
+        }
+    }
 }

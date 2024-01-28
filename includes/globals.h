@@ -69,7 +69,7 @@ extern struct UserData GIT_userdata;
  * array (argv) to store the command parameters. The maximum length of the name
  * and each parameter is specified by MAX_USERNAME_LEN and MAX_COMMAND_LEN,
  * respectively. This struct is commonly used to store and manage command
- * aliases in applications.
+ * aliases in applications. // NEEDS AN UPDATE
  */
 struct Alias {
     char name[MAX_USERNAME_LEN];         /**< Name of the alias. */
@@ -86,9 +86,9 @@ struct Alias {
  * command aliases, including details such as the alias name, argument count, and
  * an array to store command parameters. The array has a maximum capacity
  * specified by MAX_ALIAS_COUNT. The actual definition and initialization of this
- * array are expected to be provided in another source file or module.
+ * array are expected to be provided in another source file or module. // NEEDS TO UPDATE
  */
-extern struct Alias GIT_alias_list[MAX_ALIAS_COUNT];
+extern struct Alias *GIT_alias_list;
 
 
 /**
