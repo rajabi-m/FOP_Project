@@ -15,3 +15,5 @@ char *GIT_parent_dir = NULL;
 struct Alias *GIT_alias_list = NULL;
 
 int GIT_alias_count = 0;
+
+GitFile *GIT_staging_area = NULL;

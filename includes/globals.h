@@ -111,5 +111,12 @@ extern char *GIT_parent_dir;
  */
 extern int GIT_alias_count;
 
+typedef struct {
+    char *path;
+    char *object_name;
+    uint16_t access_code;
+} GitFile;
+
+extern GitFile *GIT_staging_area;
 
 #endif
