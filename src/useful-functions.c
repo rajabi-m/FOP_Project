@@ -56,7 +56,7 @@ char *findGitParentDir(){
         bool found = false;
         while ((entry = readdir(dir)))
         {
-            if (areStringsEqual(GIT_FOLDER_NAME, entry->d_name)){
+            if (areStringsEqual(GIT_DIR_NAME, entry->d_name)){
                 found = true;
                 break;
             }
@@ -161,4 +161,55 @@ TokenArray parseCommand(const char *command){
     
     
     return after;
+}
+
+
+char *gigaStrcat(int count, ...){
+
+    if (count < 2){
+        return NULL;
+    }
+
+    va_list args;
+    va_start(args, count);
+
+
+    char *res = strdup(va_arg(args, const char *));
+
+    for (int i = 1; i < count; i++)
+    {
+        
+        char *next_string = strdup(va_arg(args, const char *));
+        res = realloc(res, strlen(res) + strlen(next_string) + 1);
+        strcat(res, next_string);
+        free(next_string);
+    }
+    
+    return res;
+}
+
+
+// my giga mkdir function
+
+// void gigaMkdir(const char *path) {
+//     char *path_copy = strdup(path);
+//     char *dir_name = strtok(path_copy, "/");
+//     char *dir_path = dir_name;
+//     while (dir_name != NULL) {
+//         mkdir(dir_path, 0777); // just tries to create it  if it exists, it will just fail :) 
+//         dir_name = strtok(NULL, "/");
+//         if (dir_name != NULL) {
+//             dir_path = strcat(strcat(dir_path, "/"), dir_name);
+//         }
+//     }
+//     free(path_copy);
+// }
+
+int mkfile(const char *path){
+    FILE *file = fopen(path, "w");
+    if (file == NULL){
+        return EXIT_FAILURE;
+    }
+    fclose(file);
+    return EXIT_SUCCESS;
 }

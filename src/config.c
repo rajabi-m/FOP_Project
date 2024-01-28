@@ -62,7 +62,7 @@ int changeUserData(const char *variable, const char *value, const bool is_global
     if (is_global){
         sprintf(user_data_file_path, "%s/%s", GLOBAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
     }else{
-        sprintf(user_data_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
+        sprintf(user_data_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_DIR_NAME, LOCAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
     }
 
     struct UserData user_data;
@@ -112,6 +112,8 @@ int changeUserData(const char *variable, const char *value, const bool is_global
     }
     fclose(user_data_file);
 
+    printfSuccess(("user %s successfuly changed to %s", variable, value));
+    return EXIT_SUCCESS;
 }
 
 // function to load all user data
@@ -140,25 +142,37 @@ int loadUserData(){
 
     // loading local user data
 
+    struct UserData global_bkp = GIT_userdata;
+
     if (!GIT_parent_dir){ // exit if no git dir found
         return EXIT_SUCCESS;
     }
 
-    sprintf(user_data_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
+    sprintf(user_data_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_DIR_NAME, LOCAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
     user_data_file = fopen(user_data_file_path, "rb");
 
     if (!user_data_file){
         debug(("no local user data found! please use 'config user.*' to create one\n"));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
-    if (fread(&GIT_userdata, sizeof(&GIT_userdata), 1, user_data_file) < 1){
+    if (fread(&GIT_userdata, sizeof(GIT_userdata), 1, user_data_file) < 1){
         printError("no data on local user data file! please use 'config user.*'\n");
         fclose(user_data_file);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     fclose(user_data_file);
+
+    // using global data if blank
+    if (strlen(GIT_userdata.email) <= 0){
+        strcpy(GIT_userdata.email, global_bkp.email);
+    }
+    if (strlen(GIT_userdata.username) <= 0){
+        strcpy(GIT_userdata.username, global_bkp.username);
+    }
+
+    return EXIT_SUCCESS;
 }
 
 
@@ -187,7 +201,7 @@ int createAlias(const char *name, const char *command, const bool is_global){
     if (is_global){
         sprintf(alias_file_path, "%s/%s", GLOBAL_CONFIG_DIR, ALIAS_FILE);
     }else{
-        sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
+        sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_DIR_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
     }
 
     FILE *alias_file = fopen(alias_file_path, "ab");
@@ -240,12 +254,12 @@ int loadAliasList(){
         return EXIT_SUCCESS;
     }
 
-    sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_FOLDER_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
+    sprintf(alias_file_path, "%s/%s/%s/%s", GIT_parent_dir, GIT_DIR_NAME, LOCAL_CONFIG_DIR, ALIAS_FILE);
     alias_file = fopen(alias_file_path, "rb");
 
     if (!alias_file){
         debug(("no local alias file found! please use 'config alias.*' to create one\n"));
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     for (loaded_alias_count = 0;fread(&GIT_alias_list[loaded_alias_count], sizeof(struct Alias), 1, alias_file); loaded_alias_count++)

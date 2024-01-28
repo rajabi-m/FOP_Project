@@ -11,7 +11,7 @@
 /**
  * @brief Folder name for the Git repository.
  */
-#define GIT_FOLDER_NAME ".giga-git"
+#define GIT_DIR_NAME ".giga-git"
 
 /**
  * @brief Maximum length for user usernames.
@@ -63,7 +63,24 @@
  */
 #define GIT_USAGE "you dont know how to use giga-git :/"
 
+
 /**
  * @brief Usage help message for the config command.
  */
 #define CONFIG_COMMAND_USAGE "just enter the config things from project doc :/"
+
+#define INIT_COMMAND_USAGE "just enter the init things from project doc :/"
+
+
+
+#define COMMITS_DIR "commits"
+
+#define OBJECTS_DIR "objects"
+
+#define BRANCHES_DIR "branches"
+
+#define HEAD_FILE_NAME "saresh.head"
+
+#define STAGE_FILE_NAME "stage.nerd"
+
+#define MAIN_BRANCH "ostaad"

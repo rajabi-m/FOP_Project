@@ -5,20 +5,12 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git config -g user.name ali";
+    char command[] = "giga-git init";
     TokenArray tokenized = parseCommand(command);
     
 
     int argc = tokenized.count;
     char **argv = tokenized.tokens;
-
-    // for (int i = 0; ; i++)
-    // {
-    //     if (areStringsEqual(argv[i], "0-0")){
-    //         argc = i;
-    //         break;
-    //     }
-    // }
     
 // int main(int argc, char *argv[]){
 

@@ -56,9 +56,17 @@ bool areArgsValid(int argc, char *argv[]);
  */
 char *findGitParentDir();
 
+// some usefull colors
 
-#define RED_TEXT "\033[1;31m"
-#define RESET_TEXT "\033[0m"
+#define RED_TEXT   "\x1B[31m"
+#define GRN_TEXT   "\x1B[32m"
+#define YEL_TEXT   "\x1B[33m"
+#define BLU_TEXT   "\x1B[34m"
+#define MAG_TEXT   "\x1B[35m"
+#define CYN_TEXT   "\x1B[36m"
+#define WHT_TEXT   "\x1B[37m"
+#define RESET_TEXT "\x1B[0m"
+
 /**
  * @brief Prints a formatted error message to the standard output.
  *
@@ -72,6 +80,10 @@ char *findGitParentDir();
  */
 #define printfError(x, y) printf(RED_TEXT "Error: " x " " RESET_TEXT "\n", y)
 
+
+#define printfSuccess(x) printf(GRN_TEXT "Success: ");\
+                        printf x;\
+                        printf("\n" RESET_TEXT)
 
 /**
  * @brief Represents an array of tokens.
@@ -132,5 +144,11 @@ void freeTokens(TokenArray *tokenArray);
  */
 TokenArray parseCommand(const char *command);
 
+
+// void gigaMkdir(const char *path);
+
+char *gigaStrcat(int count, ...);
+
+int mkfile(const char *path);
 
 #endif

@@ -7,6 +7,9 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <stdarg.h>
 
 // configs
 #include "configs.h"
@@ -18,3 +21,4 @@
 
 // commands
 #include "config.h"
+#include "init.h"
