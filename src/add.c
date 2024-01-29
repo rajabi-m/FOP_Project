@@ -5,6 +5,7 @@
 int stageFile(const char *path);
 int syncStagingArea();
 void checkStageState(const char *dir_path, uint32_t depth, uint32_t current_depth);
+void restageStagedFiles();
 
 int GIT_Add(int argc, char **argv){
     if (!GIT_parent_dir){
@@ -55,7 +56,7 @@ int GIT_Add(int argc, char **argv){
             checkStageState("." ,strtol(argv[3], NULL, 10), 1);
             return EXIT_SUCCESS; // to avoid syncing staging area pointlessly
         case 'r':
-            // restageStagedFiles(); // TODO:
+            restageStagedFiles();
             break;
         default:
             printError("unknown mode for add");
@@ -251,4 +252,15 @@ void checkStageState(const char *dir_path, uint32_t depth, uint32_t current_dept
     }
     
 
+}
+
+void restageStagedFiles(){
+
+    for (int i = 0; i < GIT_stagedfiles_count; i++)
+    {
+        char *file_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
+        stageFile(file_path);
+        free(file_path);
+    }
+    
 }
