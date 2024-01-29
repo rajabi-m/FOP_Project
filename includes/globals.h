@@ -124,16 +124,18 @@ extern int GIT_stagedfiles_count;
 
 
 typedef struct{
-    struct UserData user;
-    char message[73];
-    char hash[HASH_LEN];
-    char branch[MAX_BRANCH_NAME_LEN];
-    time_t time;
+    struct MetaData{
+        struct UserData user;
+        char message[73];
+        char hash[HASH_LEN + 1];
+        char branch[MAX_BRANCH_NAME_LEN];
+        time_t time;
+        int files_count;
+        char parents_hash[2][HASH_LEN + 1]; // a commit can have two parents if it the result of a merge (فاز ۲ حواسم بهت هست XD)
+    } meta_data;
     GitFile *files;
-    int files_count;
-    char parents_hash[2][HASH_LEN]; // a commit can have two parents if it the result of a merge (فاز ۲ حواسم بهت هست XD)
-
 } Commit;
 
+extern char *GIT_HEAD; // to save head pos
 
 #endif

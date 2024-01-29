@@ -57,6 +57,8 @@
 
 #define MAX_LINE_LEN 1024
 
+#define MAX_BRANCH_NAME_LEN 20
+
 /**
  * @brief Maximum length for command strings.
  */
