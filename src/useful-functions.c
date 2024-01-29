@@ -205,6 +205,9 @@ char *gigaStrcat(int count, ...){
 //     free(path_copy);
 // }
 
+
+// file related functions
+
 int mkfile(const char *path){
     FILE *file = fopen(path, "w");
     if (file == NULL){
@@ -212,4 +215,168 @@ int mkfile(const char *path){
     }
     fclose(file);
     return EXIT_SUCCESS;
+}
+
+bool getNextNonBlankLine(FILE *file, char *output, int *new_line_n){
+    int n = *new_line_n;
+    while (true) {
+        n ++;
+        if (fgets(output, MAX_LINE_LEN, file) == NULL){
+            return false;
+        }
+        bool is_blank = true;
+        for (int i = 0; output[i]; i++)
+        {
+            if (output[i] != ' ' && output[i] != '\n'){
+                output[strcspn(output, "\n")] = '\0'; // removing \n
+                is_blank = false;
+                break;
+            }
+        }
+        if (!is_blank) break;
+            
+    }
+    *new_line_n = n;
+    return true;
+}
+
+Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback){ // these files should be opened at read mode
+    if (!(file1 && file2)){
+        return NULL;
+    }
+
+    rewind(file1);
+    rewind(file2);
+
+    char  line1[MAX_LINE_LEN], line2[MAX_LINE_LEN];
+    Diffrence *res = NULL;
+
+    int count = 0;
+    int file1_line_n = 0, file2_line_n = 0;
+    while (true)
+    {
+
+        int file1_found = getNextNonBlankLine(file1, line1, &file1_line_n);
+        int file2_found = getNextNonBlankLine(file2, line2, &file2_line_n);
+
+        
+        
+
+
+        if ((file1_found != file2_found || strcmp(line1, line2)) && (file1_found || file2_found)){
+            count ++;
+            res = realloc(res , count * sizeof(Diffrence));
+            if (file1_found) {res[count - 1].first = strdup(line1); res[count - 1].first_line_n = file1_line_n;}
+            else             {res[count - 1].first = strdup(""); res[count - 1].first_line_n = 0;}
+            if (file2_found) {res[count - 1].second = strdup(line2); res[count - 1].second_line_n = file2_line_n;}
+            else             {res[count - 1].second = strdup(""); res[count - 1].second_line_n = 0;}
+        }
+
+        if ( (!file1_found) && (!file2_found)){
+            break;
+        }
+    }
+
+    *count_feedback = count;
+    
+    return res;
+
+}
+
+void freeDiffrence(Diffrence *diffrence, int count){
+    for (int i = 0; i < count; i++)
+    {
+        free(diffrence[i].first);
+        free(diffrence[i].second);
+    }
+
+    free(diffrence);
+}
+
+bool areFilesEqual(FILE *file1, FILE *file2){
+    int diff_count;
+    Diffrence *diffrence = compareFilesLineByLine(file1, file2, &diff_count);
+    free(diffrence);
+    
+    return (diff_count == 0);
+}
+
+
+bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size){
+    FILE *dest = fopen(dest_path, "wb");
+    FILE *src = fopen(src_path, "rb");
+
+    if (!(dest && src)){
+        return false;
+    }
+
+    void *tmp = malloc(buffer_size);
+
+    while (true)
+    {
+        int count = fread(tmp, 1, buffer_size, src);
+        fwrite(tmp, 1, count, dest);
+
+        if (count < buffer_size){
+
+            fclose(src);
+            fclose(dest);
+
+            return true;
+        }
+    }
+    
+}
+
+
+// random functions
+
+char *processPath(const char *relative_path){
+
+    if (!GIT_parent_dir){
+        return NULL;
+    }
+
+    char absolute_path[MAX_PATH_LEN];
+
+    realpath(relative_path, absolute_path);
+    if (strlen(absolute_path) < strlen(GIT_parent_dir)){
+        return NULL;
+    }
+
+    char *res = strdup(absolute_path + strlen(GIT_parent_dir) + 1);
+}
+
+uint32_t getFileAccessCode(const char *path){
+    struct stat file_stat;
+    int code = stat(path, &file_stat);
+    if (-1 == code){
+        printfError("error while trying to get access code of %s", path);
+        exit(EXIT_FAILURE); // because it is in a dangrous place
+    }
+
+    return (file_stat.st_mode % 01000);
+}
+
+char *generateRandomString(size_t length) { // const size_t length, supra
+
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#?!"; // could be const
+    char *randomString;
+
+    if (length) {
+        randomString = malloc(length +1); // sizeof(char) == 1, cf. C99
+
+        if (randomString) {
+            int l = (int) (sizeof(charset) -1); // (static/global, could be const or #define SZ, would be even better)
+            int key;  // one-time instantiation (static/global would be even better)
+            for (int n = 0;n < length;n++) {        
+                key = rand() % l;   // no instantiation, just assignment, no overhead from sizeof
+                randomString[n] = charset[key];
+            }
+
+            randomString[length] = '\0';
+        }
+    }
+
+    return randomString;
 }

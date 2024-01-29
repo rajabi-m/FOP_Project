@@ -9,6 +9,8 @@ int GIT_Init(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
+    
+
     // creating git dir
     mkdir(GIT_DIR_NAME, 0755);
     mkdir(GIT_DIR_NAME "/" LOCAL_CONFIG_DIR, 0755);

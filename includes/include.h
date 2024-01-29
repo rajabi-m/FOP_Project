@@ -6,10 +6,15 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <unistd.h>
+#ifndef __USE_MISC
+#define __USE_MISC // to enable some dirent.h features
+#endif
 #include <dirent.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <linux/limits.h>
+#include <time.h>
 
 // configs
 #include "configs.h"
@@ -22,3 +27,5 @@
 // commands
 #include "config.h"
 #include "init.h"
+#include "objects.h"
+#include "add.h"

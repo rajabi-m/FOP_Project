@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git init";
+    char command[] = "giga-git add a.txt";
     TokenArray tokenized = parseCommand(command);
     
 
@@ -19,6 +19,8 @@ int main(){
 
     loadUserData();
     loadAliasList();
+    if (GIT_parent_dir) loadStagingArea();
+    
 
     if (!areArgsValid(argc, argv)){
         exit(EXIT_FAILURE);
@@ -27,6 +29,10 @@ int main(){
     for (int i = 0; GIT_commands_list[i].command_name; i++)
     {
         if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
+            if ((!GIT_commands_list[i].is_global) && (!GIT_parent_dir)){
+                printfError("%s is a local command, therefor you should be in a giga-git dir to do this.", GIT_commands_list[i].command_name);
+                exit(EXIT_FAILURE);
+            }
             return GIT_commands_list[i].function(argc, argv);
         }
     }
@@ -36,8 +42,6 @@ int main(){
     {
         if (areStringsEqual(argv[1], GIT_alias_list[i].name)){
             return doCommand(&GIT_alias_list[i]);
-            debug(("alias found : %s\n", GIT_alias_list[i].name));
-            return 0;
         }
     }
     

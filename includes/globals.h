@@ -20,6 +20,7 @@ struct Command {
     int max_argc;                /**< Maximum number of expected arguments. */
     const char *usage_help;      /**< Usage help information for the command. */
     int (*function)(int argc, char *argv[]); /**< Function pointer to the command implementation. */
+    bool is_global;
 };
 
 
@@ -112,11 +113,12 @@ extern char *GIT_parent_dir;
 extern int GIT_alias_count;
 
 typedef struct {
-    char *path;
-    char *object_name;
+    char path[MAX_PATH_LEN];
+    char object_hash[HASH_LEN + 1];
     uint16_t access_code;
 } GitFile;
 
 extern GitFile *GIT_staging_area;
 
+extern int GIT_stagedfiles_count;
 #endif

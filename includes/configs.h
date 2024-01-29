@@ -1,3 +1,5 @@
+#include <linux/limits.h>
+
 // debug
 #define __DEBUG_MODE_
 
@@ -53,10 +55,15 @@
  */
 #define MAX_PATH_LEN 1024
 
+#define MAX_LINE_LEN 1024
+
 /**
  * @brief Maximum length for command strings.
  */
 #define MAX_COMMAND_LEN 40
+
+
+#define HASH_LEN 10 /* Length of hashed password in characters */
 
 /**
  * @brief Usage help message for generic Git commands.
@@ -71,6 +78,7 @@
 
 #define INIT_COMMAND_USAGE "just enter the init things from project doc :/"
 
+#define ADD_COMMAND_USAGE "go learn how to use it"
 
 
 #define COMMITS_DIR "commits"

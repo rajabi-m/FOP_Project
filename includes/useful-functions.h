@@ -151,4 +151,25 @@ char *gigaStrcat(int count, ...);
 
 int mkfile(const char *path);
 
+char *processPath(const char *relative_path);
+
+uint32_t getFileAccessCode(const char *path);
+
+typedef struct {
+    char *first;
+    int first_line_n;
+    char *second;
+    int second_line_n;
+} Diffrence;
+
+Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback);
+
+void freeDiffrence(Diffrence *diffrence, int count);
+
+char *generateRandomString(size_t length);
+
+bool areFilesEqual(FILE *file1, FILE *file2);
+
+bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size);
+
 #endif

@@ -5,6 +5,8 @@
 build/
 .vscode/
 tests/
+src/.giga-git
+
 ### C ###
 # Prerequisites
 *.d

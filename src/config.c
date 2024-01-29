@@ -13,6 +13,7 @@ int GIT_Config(int argc, char *argv[]){
         {"global", no_argument, NULL, 'g'},
         {0, 0 ,0 ,0}
     };
+        
 
     int option = getopt_long(argc, argv, "g", config_options, NULL);
 
