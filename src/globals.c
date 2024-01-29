@@ -4,6 +4,8 @@ struct Command GIT_commands_list_array[] = {
     {"config", 4, 5, CONFIG_COMMAND_USAGE, GIT_Config, true},
     {"init", 2, 2, INIT_COMMAND_USAGE, GIT_Init, true},
     {"add", 3, INT32_MAX, ADD_COMMAND_USAGE, GIT_Add, false},
+    {"reset", 3, INT32_MAX, RESET_COMMAND_USAGE, GIT_Reset, false},
+    {"status", 2, 2, STATUS_COMMAND_USAGE, GIT_Status, false},
     {NULL, 0, 0, NULL, NULL} // just to show that it is the end of the commands list
 };
 

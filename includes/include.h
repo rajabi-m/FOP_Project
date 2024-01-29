@@ -29,3 +29,4 @@
 #include "init.h"
 #include "objects.h"
 #include "add.h"
+#include "status.h"

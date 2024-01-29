@@ -80,6 +80,10 @@
 
 #define ADD_COMMAND_USAGE "go learn how to use it"
 
+#define RESET_COMMAND_USAGE "go learn reset command baby"
+
+#define STATUS_COMMAND_USAGE "go learn how to use status command"
+
 
 #define COMMITS_DIR "commits"
 
@@ -90,5 +94,7 @@
 #define HEAD_FILE_NAME "saresh.head"
 
 #define STAGE_FILE_NAME "stage.nerd"
+
+#define STAGE_HISTORY_FILE_NAME "stage.his"
 
 #define MAIN_BRANCH "ostaad"

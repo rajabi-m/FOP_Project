@@ -21,6 +21,7 @@ int GIT_Init(int argc, char **argv){
     // creating git files
     mkfile(GIT_DIR_NAME "/" HEAD_FILE_NAME);
     mkfile(GIT_DIR_NAME "/" STAGE_FILE_NAME);
+    mkfile(GIT_DIR_NAME "/" STAGE_HISTORY_FILE_NAME);
 
 
     //

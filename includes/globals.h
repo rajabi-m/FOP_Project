@@ -115,7 +115,7 @@ extern int GIT_alias_count;
 typedef struct {
     char path[MAX_PATH_LEN];
     char object_hash[HASH_LEN + 1];
-    uint16_t access_code;
+    int32_t access_code;
 } GitFile;
 
 extern GitFile *GIT_staging_area;

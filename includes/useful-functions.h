@@ -153,7 +153,7 @@ int mkfile(const char *path);
 
 char *processPath(const char *relative_path);
 
-uint32_t getFileAccessCode(const char *path);
+int32_t getFileAccessCode(const char *path);
 
 typedef struct {
     char *first;

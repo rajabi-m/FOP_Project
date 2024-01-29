@@ -3,16 +3,16 @@
 int doCommand(struct Alias *alias);
 
 
-int main(){
+// int main(){
 
-    char command[] = "giga-git add --redo";
-    TokenArray tokenized = parseCommand(command);
+//     char command[] = "giga-git add .";
+//     TokenArray tokenized = parseCommand(command);
     
 
-    int argc = tokenized.count;
-    char **argv = tokenized.tokens;
+//     int argc = tokenized.count;
+//     char **argv = tokenized.tokens;
     
-// int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
 
     GIT_parent_dir = findGitParentDir();
     debug(("git path = %s\n", GIT_parent_dir));
@@ -30,8 +30,8 @@ int main(){
     {
         if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
             if ((!GIT_commands_list[i].is_global) && (!GIT_parent_dir)){
-                printfError("%s is a local command, therefor you should be in a giga-git dir to do this.", GIT_commands_list[i].command_name);
-                exit(EXIT_FAILURE);
+                printfError("%s is a local command, therefor you should be in a giga-git repo to do this.", GIT_commands_list[i].command_name);
+                return EXIT_FAILURE;
             }
             return GIT_commands_list[i].function(argc, argv);
         }

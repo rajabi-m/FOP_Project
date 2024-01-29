@@ -24,6 +24,7 @@ bool areArgsValid(int argc, char *argv[]){
         if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
             if (argc > GIT_commands_list[i].max_argc || argc < GIT_commands_list[i].min_argc){
                 printError(GIT_commands_list[i].usage_help);
+                return false;
             }
             return true;
         }
@@ -343,11 +344,18 @@ char *processPath(const char *relative_path){
     if (strlen(absolute_path) < strlen(GIT_parent_dir)){
         return NULL;
     }
+    char *res;
+    if(strlen(absolute_path) == strlen(GIT_parent_dir)){
+        res = strdup(".");
+        return res; // paths are equal
+    }
 
-    char *res = strdup(absolute_path + strlen(GIT_parent_dir) + 1);
+    res = strdup(absolute_path + strlen(GIT_parent_dir) + 1);
+
+    return res;
 }
 
-uint32_t getFileAccessCode(const char *path){
+int32_t getFileAccessCode(const char *path){
     struct stat file_stat;
     int code = stat(path, &file_stat);
     if (-1 == code){
