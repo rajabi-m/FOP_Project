@@ -30,3 +30,4 @@
 #include "objects.h"
 #include "add.h"
 #include "status.h"
+#include "commit.h"

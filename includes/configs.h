@@ -84,6 +84,10 @@
 
 #define STATUS_COMMAND_USAGE "go learn how to use status command"
 
+#define COMMIT_COMMAND_USAGE "ay yo go learn it"
+#define SET_COMMAND_USAGE "ay yo go learn it"
+#define REPLACE_COMMAND_USAGE "ay yo go learn it"
+#define REMOVE_COMMAND_USAGE "ay yo go learn it"
 
 #define COMMITS_DIR "commits"
 
