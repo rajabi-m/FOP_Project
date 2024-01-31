@@ -90,17 +90,18 @@
 #define SET_COMMAND_USAGE "ay yo go learn it"
 #define REPLACE_COMMAND_USAGE "ay yo go learn it"
 #define REMOVE_COMMAND_USAGE "ay yo go learn it"
+#define BRANCH_COMMAND_USAGE "ay yo go learn it"
 
 #define COMMITS_DIR "commits"
 
 #define OBJECTS_DIR "objects"
 
-#define BRANCHES_DIR "branches"
-
 #define HEAD_FILE_NAME "saresh.head"
 
 #define STAGE_FILE_NAME "stage.nerd"
 
+#define BRANCHES_FILE_NAME "branches.shakhe"
+
 #define STAGE_HISTORY_FILE_NAME "stage.his"
 
-#define MAIN_BRANCH "ostaad"
+#define MAIN_BRANCH_NAME "master"

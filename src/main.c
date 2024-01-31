@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git commit -m \"lets go nigga\"";
+    char command[] = "giga-git branch";
     TokenArray tokenized = parseCommand(command);
     
 
@@ -19,7 +19,11 @@ int main(){
 
     loadUserData();
     loadAliasList();
-    if (GIT_parent_dir) loadStagingArea();
+    if (GIT_parent_dir) {
+        loadStagingArea();
+        loadBranchesList();
+        loadGitHead();
+    }
     
 
     if (!areArgsValid(argc, argv)){
