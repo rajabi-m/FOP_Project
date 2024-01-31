@@ -59,6 +59,8 @@
 
 #define MAX_BRANCH_NAME_LEN 20
 
+#define MAX_COMMIT_MSG_LEN 72
+
 /**
  * @brief Maximum length for command strings.
  */
@@ -91,6 +93,8 @@
 #define REPLACE_COMMAND_USAGE "ay yo go learn it"
 #define REMOVE_COMMAND_USAGE "ay yo go learn it"
 #define BRANCH_COMMAND_USAGE "ay yo go learn it"
+#define CHECKOUT_COMMAND_USAGE "ay yo go learn it"
+
 
 #define COMMITS_DIR "commits"
 

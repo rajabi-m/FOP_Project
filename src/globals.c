@@ -11,6 +11,7 @@ struct Command GIT_commands_list_array[] = {
     {"replace", 6, 6, REPLACE_COMMAND_USAGE, GIT_Replace, false},
     {"remove", 4, 4, REMOVE_COMMAND_USAGE, GIT_Remove, false},
     {"branch", 2, 3, BRANCH_COMMAND_USAGE, GIT_Branch, false},
+    {"checkout", 3, 3, CHECKOUT_COMMAND_USAGE, GIT_Checkout, false},
     {NULL, 0, 0, NULL, NULL} // just to show that it is the end of the commands list
 };
 
@@ -32,6 +33,8 @@ Branch *GIT_branches_list = NULL;
 
 int GIT_branches_count = 0;
 
-char GIT_HEAD[((HASH_LEN > MAX_BRANCH_NAME_LEN)? HASH_LEN : MAX_BRANCH_NAME_LEN) + 1]; // just to make sure everything fits in it XD
+Branch *GIT_HEAD_branch;
+
+char GIT_HEAD_commit_hash[HASH_LEN + 1];
 
 bool GIT_is_head_attached = false;

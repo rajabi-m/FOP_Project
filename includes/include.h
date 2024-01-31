@@ -32,3 +32,4 @@
 #include "status.h"
 #include "commit.h"
 #include "branch.h"
+#include "checkout.h"

@@ -30,7 +30,7 @@ int GIT_Init(int argc, char **argv){
 
     // creating git head file and save master branch on it
     FILE *head_file = fopen(GIT_DIR_NAME "/" HEAD_FILE_NAME, "w");
-    fputs(MAIN_BRANCH_NAME",1", head_file); // this 1 indicates that head is attached
+    fputs(MAIN_BRANCH_NAME",1,", head_file); // this 1 indicates that head is attached
     fclose(head_file);
 
 

@@ -13,7 +13,7 @@ int GIT_Branch(int argc, char **argv){
 
         for (int i = 0; i < GIT_branches_count; i++)
         {
-            if (areStringsEqual(GIT_HEAD, GIT_branches_list[i].name)) printf("--> ");
+            if (GIT_HEAD_branch == GIT_branches_list + i) printf("--> ");
             printf("%s-'%s'\n", GIT_branches_list[i].name, GIT_branches_list[i].commit_hash);
         }
         
@@ -31,12 +31,19 @@ int GIT_Branch(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
+
     GIT_branches_count ++;
     GIT_branches_list = realloc(GIT_branches_list, GIT_branches_count * sizeof(Branch));
+    Branch *new_branch = &GIT_branches_list[GIT_branches_count - 1];
 
+    strcpy(new_branch->name, argv[2]);
 
-    strcpy(GIT_branches_list[GIT_branches_count - 1].name, argv[2]);
-    strcpy(GIT_branches_list[GIT_branches_count - 1].commit_hash, "headpos"); // TODO: config head
+    if (!GIT_is_head_attached){ // head is pointing to a branch
+        strcpy(new_branch->commit_hash, GIT_HEAD_commit_hash);
+    }else{
+        strcpy(new_branch->commit_hash, GIT_HEAD_branch->commit_hash);
+    }
+
 
     saveBranchesList();
 
@@ -98,7 +105,18 @@ void loadGitHead(){
 
     int tmp;
 
-    fscanf(head_file, "%[^,],%d", GIT_HEAD, &tmp);
+    char head_branch_name[MAX_BRANCH_NAME_LEN + 1];
+
+    GIT_HEAD_commit_hash[0] = 0;
+
+    fscanf(head_file, "%[^,],%d,%s", head_branch_name, &tmp, GIT_HEAD_commit_hash);
+
+    GIT_HEAD_branch = getBranchByName(head_branch_name);
+
+    if (!GIT_HEAD_branch){
+        printError("core pokid. in branch aslan vojood ndre!");
+        exit(EXIT_FAILURE);
+    }
 
     GIT_is_head_attached = false;
 
@@ -106,6 +124,20 @@ void loadGitHead(){
 
     fclose(head_file);
 
+}
+
+void saveGitHead(const char *branch_name, bool is_attached, const char *commit_hash){
+    char *head_file_path = gigaStrcat(5, GIT_parent_dir, "/",  GIT_DIR_NAME, "/", HEAD_FILE_NAME);
+    FILE *head_file = fopen(head_file_path, "w");
+    free(head_file_path);
+    if(!head_file){
+        printError("could not open git head file");
+        exit(EXIT_FAILURE);
+    }
+
+    fprintf(head_file, "%s,%d,%s", branch_name, is_attached, commit_hash);
+
+    fclose(head_file);
 }
 
 Branch *getBranchByName(const char *name){

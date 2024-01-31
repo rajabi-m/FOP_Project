@@ -20,7 +20,7 @@ int GIT_Commit(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    if (strlen(optarg) > 72){
+    if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
         printError("you picked the wrong len, foo!");
         exit(EXIT_FAILURE);
     }
@@ -30,10 +30,10 @@ int GIT_Commit(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    Branch *current_branch = getBranchByName(GIT_HEAD);
+    Branch *current_branch = getBranchByName(GIT_HEAD_branch->name);
 
     if (!current_branch){
-        printfError("branch %s does not exist at all!!", GIT_HEAD);
+        printfError("branch %s does not exist at all!!", GIT_HEAD_branch->name);
         exit(EXIT_FAILURE);
     }
 
@@ -44,17 +44,17 @@ int GIT_Commit(int argc, char **argv){
 
     Commit commit;
     strcpy(commit.meta_data.message, optarg);
-    strcpy(commit.meta_data.branch, GIT_HEAD); // TODO:
+    strcpy(commit.meta_data.branch, GIT_HEAD_branch->name); // TODO:
     strcpy(commit.meta_data.hash, hash);
     strcpy(commit.meta_data.user.username, GIT_userdata.username);
     strcpy(commit.meta_data.user.email, GIT_userdata.email);
     strcpy(commit.meta_data.parents_hash[0], current_branch->commit_hash); // git head branch commit name
     strcpy(commit.meta_data.parents_hash[1], "");
     commit.meta_data.time = current_time;
-    
+    commit.meta_data.files_count = GIT_stagedfiles_count;
+
     strcpy(current_branch->commit_hash, hash);
 
-    free(hash);
     // dont need to store files in commit struct because we have them is staging area
 
     char *commit_file_path = gigaStrcat(7, GIT_parent_dir, "/", GIT_DIR_NAME, "/", COMMITS_DIR, "/", commit.meta_data.hash);
@@ -74,11 +74,61 @@ int GIT_Commit(int argc, char **argv){
     free(commit_file_path);
 
     saveBranchesList();
+    saveGitHead(GIT_HEAD_branch->name, true, hash);
+    free(hash);
 
     printfSuccess(("%s commit created at %s", commit.meta_data.hash, asctime(localtime(&current_time))));
 
     return EXIT_SUCCESS;
 
+}
+
+Commit *openCommit(const char *hash){
+    char *commits_dir_path = gigaStrcat(5, GIT_parent_dir, "/",GIT_DIR_NAME, "/", COMMITS_DIR);
+    DIR *commits_dir = opendir(commits_dir_path);
+
+    struct dirent *entry;
+
+    while (entry = readdir(commits_dir))
+    {
+        if (areStringsEqual(entry->d_name, hash)){
+            
+            char *commit_path = gigaStrcat(3, commits_dir_path, "/", hash);
+            FILE *commit_file = fopen(commit_path, "rb");
+
+            if (!commit_file){
+                printError("core exploded!");
+                exit(EXIT_FAILURE);
+            }
+
+            Commit *commit = malloc(sizeof(Commit));
+
+            if (fread(&(commit->meta_data), sizeof(commit->meta_data), 1, commit_file) < 1){
+                printfError("error while loading commit %s: commit file is empty !!!!!", hash);
+                exit(EXIT_FAILURE);
+            }
+
+            commit->files = malloc(commit->meta_data.files_count * sizeof(GitFile));
+            if (fread(commit->files, sizeof(GitFile), commit->meta_data.files_count,  commit_file) < commit->meta_data.files_count){
+                printError("commit files are missed ://////?");
+                exit(EXIT_FAILURE);
+            }
+
+            free(commit_path);           
+            closedir(commits_dir);
+            return commit;
+        }
+    }
+    
+    closedir(commits_dir);
+    free(commits_dir_path);
+
+    return NULL;
+}
+
+void freeCommit(Commit *commit){
+    free(commit->files);
+    free(commit);
 }
 
 

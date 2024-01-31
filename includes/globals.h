@@ -126,7 +126,7 @@ extern int GIT_stagedfiles_count;
 typedef struct{
     struct MetaData{
         struct UserData user;
-        char message[73];
+        char message[MAX_COMMIT_MSG_LEN + 1];
         char hash[HASH_LEN + 1];
         char branch[MAX_BRANCH_NAME_LEN + 1];
         time_t time;
@@ -148,7 +148,9 @@ extern Branch *GIT_branches_list;
 extern int GIT_branches_count;
 
 
-extern char GIT_HEAD[((HASH_LEN > MAX_BRANCH_NAME_LEN)? HASH_LEN : MAX_BRANCH_NAME_LEN) + 1]; // to save head pos
+extern Branch *GIT_HEAD_branch; // to save head pos
+
+extern char GIT_HEAD_commit_hash[HASH_LEN + 1];
 
 extern bool GIT_is_head_attached;
 

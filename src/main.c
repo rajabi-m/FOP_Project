@@ -5,12 +5,14 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git branch";
+    char command[] = "giga-git checkout dev";
     TokenArray tokenized = parseCommand(command);
     
 
     int argc = tokenized.count;
     char **argv = tokenized.tokens;
+
+    chdir("../tests");
     
 // int main(int argc, char *argv[]){
 
