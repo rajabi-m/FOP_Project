@@ -109,4 +109,6 @@
 
 #define STAGE_HISTORY_FILE_NAME "stage.his"
 
+#define MSG_SHORTCUTS_FILE_NAME "message.wtf"
+
 #define MAIN_BRANCH_NAME "master"

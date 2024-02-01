@@ -1,6 +1,18 @@
 #include "include.h"
 
 
+typedef struct {
+    char shortcut[MAX_USERNAME_LEN + 1];
+    char message[MAX_COMMIT_MSG_LEN + 1];
+} MsgShortcut;
+
+MsgShortcut *msg_shortcuts = NULL;
+int msg_shortcuts_count = 0;
+
+char *getShortcutMsg(const char *shortcut);
+void saveMsgShortcuts();
+void loadMsgShortcuts();
+
 int GIT_Commit(int argc, char **argv){
 
     if (GIT_stagedfiles_count < 1){
@@ -8,22 +20,33 @@ int GIT_Commit(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    struct option commit_options[] = {
-        {"message", required_argument, NULL, 'm'},
-        {0, 0 ,0 ,0}
-    };
 
-    int option = getopt_long(argc, argv, "m:", commit_options, NULL);
+    int option = getopt(argc, argv, "m:s:");
 
     if (option == -1 || option == '?' || option == ':'){
         printf(COMMIT_COMMAND_USAGE"\n");
         exit(EXIT_FAILURE);
     }
 
-    if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
-        printError("you picked the wrong len, foo!");
-        exit(EXIT_FAILURE);
+    char *msg;
+    if (option == 'm'){
+        if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
+            printError("you picked the wrong len, foo!");
+            return(EXIT_FAILURE);
+        }
+
+        msg = optarg;
+    }    
+
+    if (option == 's'){
+        msg = getShortcutMsg(optarg);
+        if (!msg){
+            printfError("there is no shortcut called %s", optarg);
+            return EXIT_FAILURE;
+        }
     }
+
+    
 
     if (!GIT_is_head_attached){
         printError("bro thinks he has a timetravel machine XD");
@@ -43,7 +66,7 @@ int GIT_Commit(int argc, char **argv){
     char *hash = generateRandomString(HASH_LEN);
 
     Commit commit;
-    strcpy(commit.meta_data.message, optarg);
+    strcpy(commit.meta_data.message, msg);
     strcpy(commit.meta_data.branch, GIT_HEAD_branch->name); // TODO:
     strcpy(commit.meta_data.hash, hash);
     strcpy(commit.meta_data.user.username, GIT_userdata.username);
@@ -134,14 +157,175 @@ void freeCommit(Commit *commit){
 
 int GIT_Set(int argc, char **argv){
 
+    loadMsgShortcuts();
+
+    char *shortcut = NULL, *message = NULL;
+
+    int option;
+    while ((option = getopt(argc, argv, "s:m:")) != -1)
+    {
+        if (option == '?' || option == ':') return(EXIT_FAILURE);
+
+        if (option == 's') {
+            if (strlen(optarg) > MAX_USERNAME_LEN){
+                printError("you picked the wrong len foo.");
+                exit(EXIT_FAILURE);
+            }
+            shortcut = strdup(optarg);
+        }
+        if (option == 'm') {
+            if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
+                printError("you picked the wrong len foo.");
+                exit(EXIT_FAILURE);
+            }
+            message = strdup(optarg);
+        }
+    }
+
+    if (!(shortcut && message)){
+        printError("one arg is missing :/");
+        return(EXIT_FAILURE);
+    }
+
+    // check if shortcut exists
+    if (getShortcutMsg(shortcut)){
+        printfError("there is a shortcut called %s", shortcut);
+        return(EXIT_FAILURE);
+    }
+
+    // adding shortcut
+    msg_shortcuts_count ++;
+    msg_shortcuts = realloc(msg_shortcuts, msg_shortcuts_count * sizeof(MsgShortcut));
+    strcpy(msg_shortcuts[msg_shortcuts_count - 1].shortcut, shortcut);
+    strcpy(msg_shortcuts[msg_shortcuts_count - 1].message, message);
+
+    saveMsgShortcuts();
 }
 
 
 int GIT_Replace(int argc, char **argv){
+    loadMsgShortcuts();
 
+    char *shortcut = NULL, *message = NULL;
+
+    int option;
+    while ((option = getopt(argc, argv, "s:m:")) != -1)
+    {
+        if (option == '?' || option == ':') return(EXIT_FAILURE);
+
+        if (option == 's') {
+            if (strlen(optarg) > MAX_USERNAME_LEN){
+                printError("you picked the wrong len foo.");
+                return(EXIT_FAILURE);
+            }
+            shortcut = strdup(optarg);
+        }
+        if (option == 'm') {
+            if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
+                printError("you picked the wrong len foo.");
+                return(EXIT_FAILURE);
+            }
+            message = strdup(optarg);
+        }
+    }
+
+    if (!(shortcut && message)){
+        printError("one arg is missing :/");
+        return(EXIT_FAILURE);
+    }
+
+    // check if shortcut exists
+    char *old_msg = getShortcutMsg(shortcut);
+    if (!old_msg){
+        printfError("there is no shortcut called %s", shortcut);
+        return(EXIT_FAILURE);
+    }
+
+    strcpy(old_msg, message);
+
+    saveMsgShortcuts();
 }
 
 
 int GIT_Remove(int argc, char **argv){
 
+    loadMsgShortcuts();
+
+    int option = getopt(argc, argv, "s:");
+
+    if (option == -1 || option == '?' || option == ':'){
+        printf(COMMIT_COMMAND_USAGE"\n");
+        exit(EXIT_FAILURE);
+    }
+
+
+    for (int i = 0; i < msg_shortcuts_count; i++)
+    {
+        if (areStringsEqual(optarg, msg_shortcuts[i].shortcut)){
+            msg_shortcuts[i].shortcut[0] = -1; // setting a flag to remove it in savemsgshortcut
+            saveMsgShortcuts();
+            return EXIT_SUCCESS;
+        }
+    }
+
+    printfError("no msg shortcut called %s", optarg);
+    return EXIT_FAILURE;
+    
+
+}
+
+void loadMsgShortcuts(){
+    char *file_path = gigaStrcat(5, GIT_parent_dir, "/", GIT_DIR_NAME, "/", MSG_SHORTCUTS_FILE_NAME);
+    FILE *file = fopen(file_path, "rb");
+    free(file_path);
+
+    if (!file){
+        printError("could not open msg shortcuts file !!!");
+        exit(EXIT_FAILURE);
+    }
+
+    msg_shortcuts = malloc(sizeof(MsgShortcut));
+    msg_shortcuts_count = 0;
+
+    while (fread(msg_shortcuts + msg_shortcuts_count, sizeof(MsgShortcut), 1, file)  == 1)
+    {
+        msg_shortcuts_count ++;
+        msg_shortcuts = realloc(msg_shortcuts, (msg_shortcuts_count + 1) * sizeof(MsgShortcut));
+    }
+    
+    fclose(file);
+
+}
+
+void saveMsgShortcuts(){
+    char *file_path = gigaStrcat(5, GIT_parent_dir, "/", GIT_DIR_NAME, "/", MSG_SHORTCUTS_FILE_NAME);
+    FILE *file = fopen(file_path, "wb");
+    free(file_path);
+    if (!file){
+        printError("could not open msg shortcuts file !!!");
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < msg_shortcuts_count; i++)
+    {
+        if (msg_shortcuts[i].shortcut[0] == -1) continue; // my flag
+        fwrite(msg_shortcuts + i, sizeof(MsgShortcut), 1, file);
+    }
+    
+
+    fclose(file);
+
+}
+
+char *getShortcutMsg(const char *shortcut){
+    for (int i = 0; i < msg_shortcuts_count; i++)
+    {
+        if (areStringsEqual(shortcut, msg_shortcuts[i].shortcut)){
+            return (char *)msg_shortcuts[i].message;
+        }
+    }
+
+
+    return NULL;
+    
 }

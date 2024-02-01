@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git log --search \"mew-test?*\" -n 4 --author mmd --since \"2020-2-2 12:00:00\" --branch master";
+    char command[] = "giga-git log";
     TokenArray tokenized = parseCommand(command);
     
 

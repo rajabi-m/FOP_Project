@@ -5,6 +5,7 @@ bool logFilter_AUTHOR(Commit *commit, const char *arg);
 bool logFilter_SINCE(Commit *commit, const char *arg);
 bool logFilter_BEFORE(Commit *commit, const char *arg);
 bool logFilter_SEARCH(Commit *commit, const char *arg);
+void printCommit(Commit *commit);
 
 struct filer_t{
     char code;
@@ -85,7 +86,7 @@ int GIT_Log(int argc, char **argv){
         }
 
         if (is_good){
-            printf("%s\n", commit->meta_data.message);
+            printCommit(commit);
             count --;
         }
         freeCommit(commit);
@@ -93,6 +94,13 @@ int GIT_Log(int argc, char **argv){
 
 }
 
+void printCommit(Commit *commit){
+    printf("commit %s\n", commit->meta_data.hash);
+    printf("    branch: %s\n", commit->meta_data.branch);
+    printf("    message: %s\n", commit->meta_data.message);
+    printf("    file count: %d\n", commit->meta_data.files_count);
+    printf("    by %s<%s> on %s\n", commit->meta_data.user.username, commit->meta_data.user.email, asctime(localtime(&commit->meta_data.time)));
+}
 
 bool logFilter_BRANCH(Commit *commit, const char *arg){
 
