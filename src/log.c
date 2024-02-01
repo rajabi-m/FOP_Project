@@ -95,6 +95,12 @@ int GIT_Log(int argc, char **argv){
 
 
 bool logFilter_BRANCH(Commit *commit, const char *arg){
+
+    if (!getBranchByName(arg)){
+        printfError("there is no branch called %s", arg);
+        exit(EXIT_FAILURE);
+    }
+
     if (areStringsEqual(commit->meta_data.branch, arg)){
         return true;
     }
