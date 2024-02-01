@@ -35,7 +35,7 @@ int GIT_Init(int argc, char **argv){
     fclose(head_file);
 
 
-    printfSuccess(("git folder created successfuly!."));
+    printfSuccess(("git folder created successfully!."));
     return EXIT_SUCCESS;
 }
 

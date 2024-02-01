@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 // int main(){
 
-//     char command[] = "giga-git log";
+//     char command[] = "giga-git";
 //     TokenArray tokenized = parseCommand(command);
     
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-// temperory things to fix alias
+// temporary things to fix alias
 
 char **fixedAliasArgv(struct Alias *alias){
     char **res = malloc(alias->argc * sizeof(char *));

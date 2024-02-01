@@ -56,7 +56,7 @@ bool areArgsValid(int argc, char *argv[]);
  */
 char *findGitParentDir();
 
-// some usefull colors
+// some useful colors
 
 #define RED_TEXT   "\x1B[31m"
 #define GRN_TEXT   "\x1B[32m"
@@ -81,7 +81,7 @@ char *findGitParentDir();
 #define printfError(x, y) printf(RED_TEXT "Error: " x " " RESET_TEXT "\n", y)
 
 
-#define printfSuccess(x) printf(GRN_TEXT "Success: ");\
+#define printfSuccess(x) printf(BLU_TEXT "Success: ");\
                         printf x;\
                         printf("\n" RESET_TEXT)
 
@@ -160,11 +160,11 @@ typedef struct {
     int first_line_n;
     char *second;
     int second_line_n;
-} Diffrence;
+} Difference;
 
-Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback);
+Difference *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback);
 
-void freeDiffrence(Diffrence *diffrence, int count);
+void freeDifference(Difference *difference, int count);
 
 char *generateRandomString(size_t length);
 

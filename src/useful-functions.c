@@ -13,7 +13,7 @@ bool areStringsEqual(const char *str1, const char *str2){
 
 bool areArgsValid(int argc, char *argv[]){
     if (argc < 2){
-        return printError("you sould enter at least one arg :/");
+        return printError(GIT_USAGE);
     }
 
     
@@ -23,7 +23,12 @@ bool areArgsValid(int argc, char *argv[]){
     {
         if (areStringsEqual(argv[1], GIT_commands_list[i].command_name)){
             if (argc > GIT_commands_list[i].max_argc || argc < GIT_commands_list[i].min_argc){
-                printError(GIT_commands_list[i].usage_help);
+
+                printError("wrong command usage.");
+                printf(GRN_TEXT);
+                printf(GIT_commands_list[i].usage_help);
+                printf("\n"RESET_TEXT);
+
                 return false;
             }
             return true;
@@ -109,8 +114,6 @@ void freeTokens(TokenArray *tokenArray) {
     tokenArray->tokens = NULL;
 }
 
-// all copyright to Mohammad Mahdi Rjabai Robat (XD just kidding)
-
 // look at this nice parse command function that i made just right now :)
 
 TokenArray parseCommand(const char *command){
@@ -149,7 +152,7 @@ TokenArray parseCommand(const char *command){
         }
     }
 
-    for (int i = 0; i < after.count; i++) // removing double quots
+    for (int i = 0; i < after.count; i++) // removing double quotes
     {
         if (after.tokens[i][0] == '"' && after.tokens[i][strlen(after.tokens[i] - 1)] == '"'){
             char *new_string = strdup(after.tokens[i] + 1);
@@ -241,7 +244,7 @@ bool getNextNonBlankLine(FILE *file, char *output, int *new_line_n){
     return true;
 }
 
-Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback){ // these files should be opened at read mode
+Difference *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback){ // these files should be opened at read mode
     if (!(file1 && file2)){
         return NULL;
     }
@@ -250,7 +253,7 @@ Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback)
     rewind(file2);
 
     char  line1[MAX_LINE_LEN], line2[MAX_LINE_LEN];
-    Diffrence *res = NULL;
+    Difference *res = NULL;
 
     int count = 0;
     int file1_line_n = 0, file2_line_n = 0;
@@ -266,7 +269,7 @@ Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback)
 
         if ((file1_found != file2_found || strcmp(line1, line2)) && (file1_found || file2_found)){
             count ++;
-            res = realloc(res , count * sizeof(Diffrence));
+            res = realloc(res , count * sizeof(Difference));
             if (file1_found) {res[count - 1].first = strdup(line1); res[count - 1].first_line_n = file1_line_n;}
             else             {res[count - 1].first = strdup(""); res[count - 1].first_line_n = 0;}
             if (file2_found) {res[count - 1].second = strdup(line2); res[count - 1].second_line_n = file2_line_n;}
@@ -284,20 +287,20 @@ Diffrence *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback)
 
 }
 
-void freeDiffrence(Diffrence *diffrence, int count){
+void freeDifference(Difference *difference, int count){
     for (int i = 0; i < count; i++)
     {
-        free(diffrence[i].first);
-        free(diffrence[i].second);
+        free(difference[i].first);
+        free(difference[i].second);
     }
 
-    free(diffrence);
+    free(difference);
 }
 
 bool areFilesEqual(FILE *file1, FILE *file2){
     int diff_count;
-    Diffrence *diffrence = compareFilesLineByLine(file1, file2, &diff_count);
-    free(diffrence);
+    Difference *difference = compareFilesLineByLine(file1, file2, &diff_count);
+    free(difference);
     
     return (diff_count == 0);
 }
@@ -341,10 +344,17 @@ char *processPath(const char *relative_path){
     char absolute_path[MAX_PATH_LEN];
 
     realpath(relative_path, absolute_path);
+
     if (strlen(absolute_path) < strlen(GIT_parent_dir)){
         return NULL;
     }
     char *res;
+
+    if (strstr(absolute_path, GIT_parent_dir) != absolute_path){
+        printError("this path is out of your giga git directory.");
+        exit(EXIT_FAILURE);
+    }
+
     if(strlen(absolute_path) == strlen(GIT_parent_dir)){
         res = strdup(".");
         return res; // paths are equal
@@ -360,25 +370,25 @@ int32_t getFileAccessCode(const char *path){
     int code = stat(path, &file_stat);
     if (-1 == code){
         printfError("error while trying to get access code of %s", path);
-        exit(EXIT_FAILURE); // because it is in a dangrous place
+        exit(EXIT_FAILURE); // because it is in a dangerous place
     }
 
     return (file_stat.st_mode % 01000);
 }
 
-char *generateRandomString(size_t length) { // const size_t length, supra
+char *generateRandomString(size_t length) { 
 
-    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // could be const
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; 
     char *randomString;
 
     if (length) {
-        randomString = malloc(length +1); // sizeof(char) == 1, cf. C99
+        randomString = malloc(length +1);
 
         if (randomString) {
-            int l = (int) (sizeof(charset) -1); // (static/global, could be const or #define SZ, would be even better)
-            int key;  // one-time instantiation (static/global would be even better)
+            int l = (int) (sizeof(charset) -1); 
+            int key; 
             for (int n = 0;n < length;n++) {        
-                key = rand() % l;   // no instantiation, just assignment, no overhead from sizeof
+                key = rand() % l; 
                 randomString[n] = charset[key];
             }
 
@@ -394,27 +404,21 @@ bool wildcardMatch(char *wild, char *word) {
     if (*wild == '\0' && *word == '\0') 
         return true; 
   
-    // Make sure to eliminate consecutive '*' 
+
     if (*wild == '*') { 
         while (*(wild + 1) == '*') 
             wild++; 
     } 
-  
-    // Make sure that the characters after '*' are present 
-    // in word string. This function assumes that the 
-    // wild string will not contain two consecutive '*' 
+ 
     if (*wild == '*' && *(wild + 1) != '\0'
         && *word == '\0') 
         return false; 
   
-    // If the wild string contains '?', or current 
-    // characters of both strings match 
+
     if (*wild == '?' || *wild == *word) 
         return wildcardMatch(wild + 1, word + 1); 
   
-    // If there is *, then there are two possibilities 
-    // a) We consider current character of word string 
-    // b) We ignore current character of word string. 
+
     if (*wild == '*') 
         return wildcardMatch(wild + 1, word) 
                || wildcardMatch(wild, word + 1); 

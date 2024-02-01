@@ -9,7 +9,7 @@ bool popStageHistory(char *line);
 
 int GIT_Add(int argc, char **argv){
     if (!GIT_parent_dir){
-        printError("you sould be in a giga-git dir t obe able to do this !");
+        printError("you should be in a giga-git dir t obe able to do this !");
         exit(EXIT_FAILURE);
     }
 
@@ -75,18 +75,18 @@ int stageFile(const char *path, bool bug_fixer){
 
     struct stat statbuf;
     if (stat(path, &statbuf) == -1){
-        printfError("path %s is probebly wrong.", path);
+        printfError("path %s is probably wrong.", path);
         return EXIT_FAILURE;
     }
-    char *proccesed_path = processPath(path);
+    char *processed_path = processPath(path);
 
-    if (areStringsEqual(proccesed_path, GIT_DIR_NAME)){
-        printfError("bro tying to stage %s folder XDDD", GIT_DIR_NAME);
+    if (strstr(processed_path, GIT_DIR_NAME)){
+        printfError("bro tying to stage %s folder XDD", GIT_DIR_NAME);
         exit(EXIT_FAILURE);
     }
 
     if (bug_fixer){
-        pushStageHistory(proccesed_path);
+        pushStageHistory(processed_path);
     }
 
     if (S_ISDIR(statbuf.st_mode)){
@@ -117,16 +117,20 @@ int stageFile(const char *path, bool bug_fixer){
 
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
-        if (areStringsEqual(proccesed_path, GIT_staging_area[i].path)){
+        if (areStringsEqual(processed_path, GIT_staging_area[i].path)){
             
             FILE *before = openObject(GIT_staging_area[i].object_hash, "r");
             if (!areFilesEqual(before, now)){
-                debug(("file %s has been changed...\n", proccesed_path));
+                debug(("file %s has been changed...\n", processed_path));
                 char object_hash[HASH_LEN + 1];
                 createNewObject(path, object_hash);
                 strcpy(GIT_staging_area[i].object_hash, object_hash);
+                printfSuccess(("file %s is now staged again.", path));
             }
-            GIT_staging_area[i].access_code = getFileAccessCode(path);
+            if (GIT_staging_area[i].access_code != getFileAccessCode(path)){
+                GIT_staging_area[i].access_code = getFileAccessCode(path);
+                printfSuccess(("the access code of file %s successfully updated.", path));
+            }
             fclose(before);
             is_untracked = false;
             break;
@@ -139,12 +143,12 @@ int stageFile(const char *path, bool bug_fixer){
         char object_hash[HASH_LEN + 1];
         createNewObject(path, object_hash);
         GIT_staging_area[GIT_stagedfiles_count - 1].access_code = getFileAccessCode(path);
-        strcpy(GIT_staging_area[GIT_stagedfiles_count - 1].path, proccesed_path);
+        strcpy(GIT_staging_area[GIT_stagedfiles_count - 1].path, processed_path);
         strcpy(GIT_staging_area[GIT_stagedfiles_count - 1].object_hash, object_hash);
+        printfSuccess(("file %s staged successfully!", path));
     }
 
-    printfSuccess(("file %s staged successfuly!", path));
-    free(proccesed_path);
+    free(processed_path);
     fclose(now);
 
     
@@ -252,7 +256,7 @@ void checkStageState(const char *dir_path, uint32_t depth, uint32_t current_dept
             }
 
             if (!staged){
-                printf(YEL_TEXT "UNSTAGED : " RESET_TEXT "%s\n", processed_path);
+                printf(YEL_TEXT "NOT STAGED : " RESET_TEXT "%s\n", processed_path);
             }
         
 
@@ -308,7 +312,7 @@ int GIT_Reset(int argc, char **argv){
             unstageFile(argv[2]);
             break;
         case 'f':
-            for (int i = 2; i < argc; i++)
+            for (int i = 3; i < argc; i++)
             {
                 unstageFile(argv[i]);
             }
@@ -332,7 +336,7 @@ int unstageFile(const char *file_path){
     
     struct stat statbuf;
     if (stat(file_path, &statbuf) == -1){
-        printfError("path %s is probebly wrong.", file_path);
+        printfError("path %s is probably wrong.", file_path);
         return EXIT_FAILURE;
     }
 
@@ -356,6 +360,7 @@ int unstageFile(const char *file_path){
         if (areStringsEqual(processed_path, GIT_staging_area[i].path)){
             GIT_staging_area[i].access_code = -1;
             free(processed_path);
+            printfSuccess(("file %s is not staged any more", file_path));
             return EXIT_SUCCESS;
         }
     }
@@ -413,7 +418,7 @@ bool popStageHistory(char *line){
 
     // removing last line from stage history
 
-    command = gigaStrcat(2, "sed -i '$ d' ", stage_history_file_path);
+    command = gigaStrcat(3, "sed -i '$ d' \"", stage_history_file_path, "\"");
     system(command);
     free(command);
 

@@ -1,13 +1,13 @@
 #include "include.h"
 
-bool anyNonStagedGhanges();
+bool anyNonCommitedChanges();
 void loadCommit(const char *hash);
 void stepBackward(int count, char *final_hash);
 
 int GIT_Checkout(int argc, char **argv){
 
-    if (anyNonStagedGhanges()){
-        printError("you have non-staged changes! please fix this using add command.");
+    if (anyNonCommitedChanges() && GIT_is_head_attached){
+        printError("you have non-commited changes! Commit these changes to  proceed.");
         exit(EXIT_FAILURE);
     }
 
@@ -61,38 +61,42 @@ int GIT_Checkout(int argc, char **argv){
     return EXIT_SUCCESS;
 }
 
-bool anyNonStagedGhanges(){
-    // this function does not check if any new file is added, it just checks the stagged files and if any of them are changed it returns false
+bool anyNonCommitedChanges(){
+    // this function does not check if any new file is added, it just checks the staged files and if any of them are changed it returns false
 
-    for (int i = 0; i < GIT_stagedfiles_count; i++)
+    Commit *last_commit = openCommit(GIT_HEAD_commit_hash);
+
+    for (int i = 0; i < last_commit->meta_data.files_count; i++)
     {
-        FILE *staged_file = openObject(GIT_staging_area[i].object_hash, "r");
+        FILE *staged_file = openObject(last_commit->files[i].object_hash, "r");
 
         if (!staged_file){
             printError("core exploded :(");
             exit(EXIT_FAILURE);
         }
 
-        char *current_file_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
+        char *current_file_path = gigaStrcat(3, GIT_parent_dir, "/", last_commit->files[i].path);
         FILE *current_file = fopen(current_file_path, "r");
 
         if (!current_file){
-            printfError("%s is deleted.", GIT_staging_area[i].path);
+            printfError("%s is deleted.", last_commit->files[i].path);
             return true;
         }
 
         if (!areFilesEqual(staged_file, current_file)){
-            printfError("%s is changed.", GIT_staging_area[i].path);
+            printfError("%s is changed.", last_commit->files[i].path);
             return true;
         }
 
-        if (GIT_staging_area[i].access_code != getFileAccessCode(current_file_path)){
-            printfError("%s access code is changed.", GIT_staging_area[i].path);
+        if (last_commit->files[i].access_code != getFileAccessCode(current_file_path)){
+            printfError("%s access code is changed.", last_commit->files[i].path);
             return true;
         }
 
         free(current_file_path);
     }
+
+    freeCommit(last_commit);
     
     return false;
 
@@ -153,6 +157,9 @@ void loadCommit(const char *hash){
             printError("error while trying to load commit");
             exit(EXIT_FAILURE);
         }
+
+        chmod(dest_path, commit->files[i].access_code);
+
         free(dest_path);
         free(object_path);
     }

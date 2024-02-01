@@ -14,13 +14,13 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <linux/limits.h>
-#define __USE_XOPEN // to unlock more fetures in time.h
+#define __USE_XOPEN // to unlock more features in time.h
 #include <time.h>
 
 // configs
 #include "configs.h"
 
-// requiered files
+// required files
 #include "globals.h"
 #include "useful-functions.h"
 

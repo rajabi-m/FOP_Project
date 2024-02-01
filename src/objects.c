@@ -1,7 +1,7 @@
 #include "include.h"
 
 //
-bool createNewObject(const char *path, char *object_hash){ // file should be oppened in "r" mode
+bool createNewObject(const char *path, char *object_hash){ // file should be opened in "r" mode
     time_t my_timer;
     time(&my_timer);
     srand((unsigned) (my_timer + strlen(path) + path[strlen(path) - 1]));

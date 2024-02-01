@@ -58,7 +58,7 @@ int GIT_Config(int argc, char *argv[]){
 
 
 int changeUserData(const char *variable, const char *value, const bool is_global){
-    // finding user data file path and oppenning it
+    // finding user data file path and opening it
     char user_data_file_path[MAX_PATH_LEN];
     if (is_global){
         sprintf(user_data_file_path, "%s/%s", GLOBAL_CONFIG_DIR, USERDATA_CONFIG_FILE);
@@ -75,7 +75,7 @@ int changeUserData(const char *variable, const char *value, const bool is_global
         user_data_file = fopen(user_data_file_path, "w");
 
         if (!user_data_file){
-            debug(("faild to create it too\n"));
+            debug(("failed to create it too\n"));
             exit(EXIT_FAILURE);
         }
 
@@ -113,7 +113,7 @@ int changeUserData(const char *variable, const char *value, const bool is_global
     }
     fclose(user_data_file);
 
-    printfSuccess(("user %s successfuly changed to %s", variable, value));
+    printfSuccess(("user %s successfully changed to %s", variable, value));
     return EXIT_SUCCESS;
 }
 
@@ -236,11 +236,7 @@ int loadAliasList(){
 
     for (loaded_alias_count = 0;fread(&GIT_alias_list[loaded_alias_count], sizeof(struct Alias), 1, alias_file); loaded_alias_count++)
     {
-        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 1) * sizeof(struct Alias));
-        // if (loaded_alias_count >= MAX_ALIAS_COUNT){
-        //     printError("maximum alias count exeeded");
-        //     exit(EXIT_FAILURE);
-        // }
+        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 2) * sizeof(struct Alias));
     }
     
     GIT_alias_count = loaded_alias_count;
@@ -265,11 +261,7 @@ int loadAliasList(){
 
     for (loaded_alias_count = 0;fread(&GIT_alias_list[loaded_alias_count], sizeof(struct Alias), 1, alias_file); loaded_alias_count++)
     {
-        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 1) * sizeof(struct Alias));
-        // if (loaded_alias_count >= MAX_ALIAS_COUNT){
-        //     printError("maximum alias count exeeded");
-        //     exit(EXIT_FAILURE);
-        // }
+        GIT_alias_list = realloc(GIT_alias_list, (loaded_alias_count + 2) * sizeof(struct Alias));
     }
     GIT_alias_count = loaded_alias_count;
 

@@ -51,7 +51,7 @@ int GIT_Commit(int argc, char **argv){
     
 
     if (!GIT_is_head_attached){
-        printError("bro thinks he has a timetravel machine XD");
+        printError("bro thinks he has a time travel machine XD");
         exit(EXIT_FAILURE);
     }
 
@@ -269,7 +269,7 @@ int GIT_Remove(int argc, char **argv){
     for (int i = 0; i < msg_shortcuts_count; i++)
     {
         if (areStringsEqual(optarg, msg_shortcuts[i].shortcut)){
-            msg_shortcuts[i].shortcut[0] = -1; // setting a flag to remove it in savemsgshortcut
+            msg_shortcuts[i].shortcut[0] = -1; // setting a flag to remove it in saveMsgShortcuts
             saveMsgShortcuts();
             printfSuccess(("shortcut successfully removed!"));
             return EXIT_SUCCESS;
