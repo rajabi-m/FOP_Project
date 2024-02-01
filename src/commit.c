@@ -15,6 +15,8 @@ void loadMsgShortcuts();
 
 int GIT_Commit(int argc, char **argv){
 
+    loadMsgShortcuts();
+
     if (GIT_stagedfiles_count < 1){
         printError("at least stage 1 file bro ://////////////");
         exit(EXIT_FAILURE);
