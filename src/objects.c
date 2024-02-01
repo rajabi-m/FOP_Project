@@ -3,7 +3,8 @@
 //
 bool createNewObject(const char *path, char *object_hash){ // file should be oppened in "r" mode
     time_t my_timer;
-    srand((unsigned) time(&my_timer));
+    time(&my_timer);
+    srand((unsigned) (my_timer + strlen(path) + path[strlen(path) - 1]));
     char *hash = generateRandomString(HASH_LEN);
     strcpy(object_hash, hash);
     free(hash);   

@@ -64,7 +64,7 @@ int GIT_Commit(int argc, char **argv){
 
     time_t current_time;
     time(&current_time);
-    srand((unsigned)current_time);
+    srand((unsigned)(current_time + GIT_stagedfiles_count));
     char *hash = generateRandomString(HASH_LEN);
 
     Commit commit;
