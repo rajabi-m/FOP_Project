@@ -127,7 +127,7 @@ typedef struct{
     struct MetaData{
         struct UserData user;
         char message[MAX_COMMIT_MSG_LEN + 1];
-        char hash[HASH_LEN + 1];
+        char hash[HASH_LEN +1];
         char branch[MAX_BRANCH_NAME_LEN + 1];
         time_t time;
         int files_count;

@@ -14,6 +14,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <linux/limits.h>
+#define __USE_XOPEN // to unlock more fetures in time.h
 #include <time.h>
 
 // configs
@@ -33,3 +34,4 @@
 #include "commit.h"
 #include "branch.h"
 #include "checkout.h"
+#include "log.h"

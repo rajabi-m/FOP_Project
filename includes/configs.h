@@ -94,6 +94,7 @@
 #define REMOVE_COMMAND_USAGE "ay yo go learn it"
 #define BRANCH_COMMAND_USAGE "ay yo go learn it"
 #define CHECKOUT_COMMAND_USAGE "ay yo go learn it"
+#define LOG_COMMAND_USAGE "ay yo go learn it"
 
 
 #define COMMITS_DIR "commits"

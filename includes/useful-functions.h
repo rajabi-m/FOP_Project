@@ -172,4 +172,6 @@ bool areFilesEqual(FILE *file1, FILE *file2);
 
 bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size);
 
+bool wildcardMatch(char *wild, char *word);
+
 #endif
