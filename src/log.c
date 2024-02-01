@@ -60,7 +60,7 @@ int GIT_Log(int argc, char **argv){
     }
 
     // printing stuff
-    char *command = gigaStrcat(6, "ls -t ", GIT_parent_dir, "/", GIT_DIR_NAME, "/", COMMITS_DIR);
+    char *command = gigaStrcat(7, "ls -t \"", GIT_parent_dir, "/", GIT_DIR_NAME, "/", COMMITS_DIR, "\"");
     FILE *terminal = popen(command, "r");
     free(command);
 

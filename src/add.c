@@ -393,7 +393,7 @@ void pushStageHistory(const char *line){
 bool popStageHistory(char *line){
     char *stage_history_file_path = gigaStrcat(5, GIT_parent_dir, "/", GIT_DIR_NAME, "/", STAGE_HISTORY_FILE_NAME);
 
-    char *command = gigaStrcat(2, "tail -n 1 ", stage_history_file_path);
+    char *command = gigaStrcat(3, "tail -n 1 \"", stage_history_file_path, "\"");
     FILE *bash_stream = popen(command, "r");
     free(command);
     char tmp_line[MAX_PATH_LEN];

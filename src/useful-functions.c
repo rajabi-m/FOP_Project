@@ -368,7 +368,7 @@ int32_t getFileAccessCode(const char *path){
 
 char *generateRandomString(size_t length) { // const size_t length, supra
 
-    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#?!"; // could be const
+    static char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; // could be const
     char *randomString;
 
     if (length) {
