@@ -69,7 +69,7 @@ int GIT_Commit(int argc, char **argv){
 
     Commit commit;
     strcpy(commit.meta_data.message, msg);
-    strcpy(commit.meta_data.branch, GIT_HEAD_branch->name); // TODO:
+    strcpy(commit.meta_data.branch, GIT_HEAD_branch->name);
     strcpy(commit.meta_data.hash, hash);
     strcpy(commit.meta_data.user.username, GIT_userdata.username);
     strcpy(commit.meta_data.user.email, GIT_userdata.email);

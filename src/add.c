@@ -70,9 +70,8 @@ int GIT_Add(int argc, char **argv){
 
 
 
-int stageFile(const char *path, bool bug_fixer){ // explain why we have a bug_fixer TODO:
-
-    // add capability to not be able to stage .giga-git TODO:
+int stageFile(const char *path, bool bug_fixer){
+    // bug fixer is here to indicate when ever the stage path should be saved in stage.his file or not
 
     struct stat statbuf;
     if (stat(path, &statbuf) == -1){
@@ -80,6 +79,11 @@ int stageFile(const char *path, bool bug_fixer){ // explain why we have a bug_fi
         return EXIT_FAILURE;
     }
     char *proccesed_path = processPath(path);
+
+    if (areStringsEqual(proccesed_path, GIT_DIR_NAME)){
+        printfError("bro tying to stage %s folder XDDD", GIT_DIR_NAME);
+        exit(EXIT_FAILURE);
+    }
 
     if (bug_fixer){
         pushStageHistory(proccesed_path);
