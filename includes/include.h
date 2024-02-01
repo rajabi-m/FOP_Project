@@ -35,3 +35,4 @@
 #include "branch.h"
 #include "checkout.h"
 #include "log.h"
+#include "revert.h"

@@ -141,6 +141,8 @@
                           "               giga-git --search \"<word1>-<word2>-...\""
 
 
+#define REVERT_COMMAND_USAGE "correct usage: giga-git revert -c <commit-hash> [-m <message>] [-n]"
+
 #define COMMITS_DIR "commits"
 
 #define OBJECTS_DIR "objects"
