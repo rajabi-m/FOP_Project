@@ -46,6 +46,7 @@ int GIT_Branch(int argc, char **argv){
 
 
     saveBranchesList();
+    printfSuccess(("%s branch successfully created!", argv[2]));
 
 }
 

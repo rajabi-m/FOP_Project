@@ -202,6 +202,8 @@ int GIT_Set(int argc, char **argv){
     strcpy(msg_shortcuts[msg_shortcuts_count - 1].message, message);
 
     saveMsgShortcuts();
+
+    printfSuccess(("shortcut successfully added!"));
 }
 
 
@@ -246,6 +248,9 @@ int GIT_Replace(int argc, char **argv){
     strcpy(old_msg, message);
 
     saveMsgShortcuts();
+    printfSuccess(("shortcut successfully changed!"));
+
+    return EXIT_SUCCESS;
 }
 
 
@@ -266,6 +271,7 @@ int GIT_Remove(int argc, char **argv){
         if (areStringsEqual(optarg, msg_shortcuts[i].shortcut)){
             msg_shortcuts[i].shortcut[0] = -1; // setting a flag to remove it in savemsgshortcut
             saveMsgShortcuts();
+            printfSuccess(("shortcut successfully removed!"));
             return EXIT_SUCCESS;
         }
     }
