@@ -227,6 +227,11 @@ int GIT_Merge(int argc, char **argv){
     
     loadCommit(hash);
 
+    strcpy(branch1->commit_hash, hash);
+    strcpy(branch2->commit_hash, hash);
+
+    saveBranchesList();
+
     saveGitHead(branch1_name, true, hash);
 
     printfSuccess(("merge completed with commit hash %s", hash));
