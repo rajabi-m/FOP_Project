@@ -38,3 +38,4 @@
 #include "revert.h"
 #include "tag.h"
 #include "diff.h"
+#include "merge.h"

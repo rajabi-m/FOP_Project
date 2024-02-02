@@ -421,7 +421,7 @@ CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_
             result->second_commit_files = realloc(result->second_commit_files, sizeof(*result->second_commit_files) * result->second_commit_files_n);
 
             int index = result->second_commit_files_n - 1;
-            result->second_commit_files[i] = strdup(second_commit->files[i].path);
+            result->second_commit_files[index] = strdup(second_commit->files[i].path);
         }
     }
     

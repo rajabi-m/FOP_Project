@@ -8,6 +8,9 @@ void pushStageHistory(const char *line);
 bool popStageHistory(char *line);
 
 int GIT_Add(int argc, char **argv){
+
+    srand((unsigned) time(NULL)); // seeding for createObject function
+
     if (!GIT_parent_dir){
         printError("you should be in a giga-git dir t obe able to do this !");
         exit(EXIT_FAILURE);
@@ -114,6 +117,8 @@ int stageFile(const char *path, bool bug_fixer){
     
 
     bool is_untracked = true;
+    
+
 
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {

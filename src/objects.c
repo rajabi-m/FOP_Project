@@ -2,19 +2,18 @@
 
 //
 bool createNewObject(const char *path, char *object_hash){ // file should be opened in "r" mode
-    time_t my_timer;
-    time(&my_timer);
-    srand((unsigned) (my_timer + strlen(path) + path[strlen(path) - 1]));
     char *hash = generateRandomString(HASH_LEN);
     strcpy(object_hash, hash);
     free(hash);   
     char *object_path = gigaStrcat(7, GIT_parent_dir, "/", GIT_DIR_NAME, "/", OBJECTS_DIR, "/", object_hash);
+    debug(("hash = %s\n", object_hash));
     
     if (copyFile(object_path, path, 1000)){
         free(object_path);
 
         return true;
     }
+
 
     free(object_path);
     return false;

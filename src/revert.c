@@ -45,7 +45,7 @@ int GIT_Revert(int argc, char **argv){
         if (count == 1){
             step = 0;
         }
-        stepBackward(count, commit_hash);       
+        stepBackward(step, commit_hash);       
     }
 
     if(!isRevertPossible(commit_hash)){
