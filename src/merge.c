@@ -1,5 +1,6 @@
 #include "include.h"
 
+
 int GIT_Merge(int argc, char **argv){
     int option;
     char *branch1_name = GIT_HEAD_branch->name;
@@ -66,7 +67,7 @@ int GIT_Merge(int argc, char **argv){
     int index = 0;
     for (int j = 0; j < branch1_commit->meta_data.files_count; j++)
     {
-        for (int i; i < branch_diff->first_commit_files_n; i++)
+        for (int i = 0; i < branch_diff->first_commit_files_n; i++)
         {
             if (areStringsEqual(branch_diff->first_commit_files[i], branch1_commit->files[j].path)){
                 memcpy(&new_commit.files[index], &branch1_commit->files[j], sizeof(GitFile));
@@ -117,6 +118,7 @@ int GIT_Merge(int argc, char **argv){
         {
             if (areStringsEqual(branch1_commit->files[j].path, branch_diff->commons[i].file_path)){
                 current_object = openObject(branch1_commit->files[j].object_hash, "r");
+                break;
             }
         }
         
@@ -152,8 +154,8 @@ int GIT_Merge(int argc, char **argv){
                         printf("<%s><%d>\n", branch2_name, branch_diff->commons[i].diffs.diff[diff_index].second_line_n);
                         printf("--- %s\n", branch_diff->commons[i].diffs.diff[diff_index].second);
                         printf("<<<%s>------------\n", branch_diff->commons[i].file_path);
-                        scanf("%c", &input);
                         printf("what do you want to do? ->");
+                        scanf("\n%c", &input);
                         switch(input){
                             case '1':{
                                 fputs(branch_diff->commons[i].diffs.diff[diff_index].first, new_object);
@@ -180,7 +182,7 @@ int GIT_Merge(int argc, char **argv){
                         break;
                     }
                     
-
+                diff_index ++;
                 }
 
 
@@ -190,9 +192,15 @@ int GIT_Merge(int argc, char **argv){
                 }else{
                     if (diff_index < branch_diff->commons[i].diffs.diff_count){
                         // if there is still some lines in file 2
-                        fputs(branch_diff->commons[i].diffs.diff[diff_index].second, new_object);
-                        fputc('\n', new_object);
-                        diff_index ++;
+
+                        for (int b = 0; b < branch_diff->commons[i].diffs.diff_count - diff_index; b++)
+                        {
+                            fputs(branch_diff->commons[i].diffs.diff[diff_index].second, new_object);
+                            fputc('\n', new_object);
+                            diff_index ++;
+                        }
+                        break;
+                        
                     }else{
                         break;
                     }
@@ -203,12 +211,6 @@ int GIT_Merge(int argc, char **argv){
 
         fclose(current_object);
         fclose(new_object);
-
-
-
-        
-        
-
     }
     
     freeCommit(branch1_commit);
@@ -224,6 +226,10 @@ int GIT_Merge(int argc, char **argv){
     fclose(new_commit_file);
     
     loadCommit(hash);
+
+    saveGitHead(branch1_name, true, hash);
+
+    printfSuccess(("merge completed with commit hash %s", hash));
 
     return EXIT_SUCCESS;
 
