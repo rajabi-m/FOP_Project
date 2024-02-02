@@ -287,6 +287,64 @@ Difference *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback
 
 }
 
+
+
+Difference *compareFilesLineByLineV2(FILE *file1, FILE *file2, int file1_start, int file1_end, int file2_start, int file2_end, int *count_feedback){ // these files should be opened at read mode
+    if (!(file1 && file2)){
+        return NULL;
+    }
+
+    rewind(file1);
+    rewind(file2);
+
+    // moving files to the specified line.
+    char tmp_line[MAX_LINE_LEN];
+    for (int i = 0; i < file1_start - 1; i++)
+    {
+        fgets(tmp_line, MAX_LINE_LEN, file1);
+    }
+    for (int i = 0; i < file2_start - 1; i++)
+    {
+        fgets(tmp_line, MAX_LINE_LEN, file2);
+    }
+
+
+    char  line1[MAX_LINE_LEN], line2[MAX_LINE_LEN];
+    Difference *res = NULL;
+
+    int count = 0;
+    int file1_line_n = file1_start - 1, file2_line_n = file2_start - 1;
+    while (true)
+    {
+
+        int file1_found = getNextNonBlankLine(file1, line1, &file1_line_n);
+        int file2_found = getNextNonBlankLine(file2, line2, &file2_line_n);
+
+        if(file1_line_n > file1_end) file1_found = false;
+        if(file2_line_n > file2_end) file2_found = false;
+        
+
+
+        if ((file1_found != file2_found || strcmp(line1, line2)) && (file1_found || file2_found)){
+            count ++;
+            res = realloc(res , count * sizeof(Difference));
+            if (file1_found) {res[count - 1].first = strdup(line1); res[count - 1].first_line_n = file1_line_n;}
+            else             {res[count - 1].first = strdup(""); res[count - 1].first_line_n = 0;}
+            if (file2_found) {res[count - 1].second = strdup(line2); res[count - 1].second_line_n = file2_line_n;}
+            else             {res[count - 1].second = strdup(""); res[count - 1].second_line_n = 0;}
+        }
+
+        if ( (!file1_found) && (!file2_found)){
+            break;
+        }
+    }
+
+    *count_feedback = count;
+    
+    return res;
+
+}
+
 void freeDifference(Difference *difference, int count){
     for (int i = 0; i < count; i++)
     {
@@ -296,6 +354,107 @@ void freeDifference(Difference *difference, int count){
 
     free(difference);
 }
+
+
+CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_commit_hash){
+    CommitDiff *result = malloc(sizeof(CommitDiff));
+    result->commons = NULL;
+    result->commons_n = 0;
+    result->first_commit_files = NULL;
+    result->first_commit_files_n = 0;
+    result->second_commit_files = NULL;
+    result->second_commit_files_n = 0;
+
+    Commit *first_commit = openCommit(first_commit_hash);
+    Commit *second_commit = openCommit(second_commit_hash);
+
+    if (!(first_commit && second_commit)) return NULL;
+
+    if ((first_commit->meta_data.files_count < 0) || (second_commit->meta_data.files_count < 0)){
+        printError("Core Exploded!!: in function compareTwoCommits\none of commits has a negative file count");
+        return NULL;
+    }
+
+    bool checklist[second_commit->meta_data.files_count];
+
+    for (int i = 0; i < second_commit->meta_data.files_count; i++)
+    {
+        checklist[i] = false;
+    }
+    
+
+    for (int i = 0; i < first_commit->meta_data.files_count; i++)
+    {
+        bool is_common = false;
+        for (int j = 0; j < second_commit->meta_data.files_count; j++)
+        {
+            if (areStringsEqual(first_commit->files[i].path, second_commit->files[j].path)){
+                is_common = true;
+                checklist[j] = true;
+                result->commons_n ++;
+                result->commons = realloc(result->commons, sizeof(*result->commons) * (result->commons_n));
+                
+
+                int index = result->commons_n - 1;
+                result->commons[index].file_path =  strdup(first_commit->files[i].path);
+
+                FILE *first_object = openObject(first_commit->files[i].object_hash, "r");
+                FILE *second_object = openObject(second_commit->files[j].object_hash, "r");
+                result->commons[index].diffs.diff = compareFilesLineByLine(first_object, second_object, &result->commons[index].diffs.diff_count);
+            }
+        }
+
+        if (!is_common){
+            result->first_commit_files_n ++;
+            result->first_commit_files = realloc(result->first_commit_files, sizeof(*result->first_commit_files) * result->first_commit_files_n);
+
+            int index = result->first_commit_files_n - 1;
+            result->first_commit_files[index] = strdup(first_commit->files[i].path);
+        }
+        
+    }
+    
+    for (int i = 0; i < second_commit->meta_data.files_count; i++)
+    {
+        if (!checklist[i]){
+            result->second_commit_files_n ++;
+            result->second_commit_files = realloc(result->second_commit_files, sizeof(*result->second_commit_files) * result->second_commit_files_n);
+
+            int index = result->second_commit_files_n - 1;
+            result->second_commit_files[i] = strdup(second_commit->files[i].path);
+        }
+    }
+    
+    freeCommit(first_commit);
+    freeCommit(second_commit);
+
+    return result;
+
+}
+
+void freeCommitDiff(CommitDiff *commit_diff){
+    for (int i = 0; i < commit_diff->commons_n; i++)
+    {
+        free(commit_diff->commons[i].file_path);
+        freeDifference(commit_diff->commons[i].diffs.diff, commit_diff->commons[i].diffs.diff_count);
+    }
+    
+    for (int i = 0; i < commit_diff->first_commit_files_n; i++)
+    {
+        free(commit_diff->first_commit_files[i]);
+    }
+    
+    for (int i = 0; i < commit_diff->second_commit_files_n; i++)
+    {
+        free(commit_diff->second_commit_files[i]);
+    }
+
+    free(commit_diff->commons);
+    free(commit_diff->first_commit_files);
+    free(commit_diff->second_commit_files);
+    free(commit_diff);
+}
+
 
 bool areFilesEqual(FILE *file1, FILE *file2){
     int diff_count;

@@ -147,6 +147,8 @@
                           "               giga-git tag show <tag-name>\n"\
                           "               giga-git tag -a <tag-name> [-m <tag-message>] [-c <commit-id>] [-f]"
 
+#define DIFF_COMMAND_USAGE "correct usage: giga-git diff -f <file1> -f <file2> [--line1 <start-end>] [--line2 <start-end>]"
+
 #define COMMITS_DIR "commits"
 
 #define OBJECTS_DIR "objects"

@@ -37,3 +37,4 @@
 #include "log.h"
 #include "revert.h"
 #include "tag.h"
+#include "diff.h"

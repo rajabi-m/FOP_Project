@@ -163,8 +163,28 @@ typedef struct {
 } Difference;
 
 Difference *compareFilesLineByLine(FILE *file1, FILE *file2, int *count_feedback);
+Difference *compareFilesLineByLineV2(FILE *file1, FILE *file2, int file1_start, int file1_end, int file2_start, int file2_end, int *count_feedback);
 
 void freeDifference(Difference *difference, int count);
+
+typedef struct {
+    char **first_commit_files;
+    int first_commit_files_n;
+    char **second_commit_files;
+    int second_commit_files_n;
+    struct {
+        char *file_path;
+        struct {
+            Difference *diff;
+            int diff_count;
+        } diffs;
+    } *commons;
+    int commons_n;
+} CommitDiff;
+
+CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_commit_hash);
+
+void freeCommitDiff(CommitDiff *commit_diff);
 
 char *generateRandomString(size_t length);
 
