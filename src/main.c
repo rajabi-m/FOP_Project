@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git revert -c 41dDP8ixDT";
+    char command[] = "giga-git tag mmd ss";
     TokenArray tokenized = parseCommand(command);
     
 

@@ -1,5 +1,7 @@
 #include "include.h"
 
+bool isRevertPossible(const char *commit_hash);
+
 int GIT_Revert(int argc, char **argv){
     int option;
     bool create_new_commit = true;
@@ -44,6 +46,11 @@ int GIT_Revert(int argc, char **argv){
             step = 0;
         }
         stepBackward(count, commit_hash);       
+    }
+
+    if(!isRevertPossible(commit_hash)){
+        printError("this revert is not possible.\nmaybe its from another branch or a merge has happened in the middle of way.");
+        return EXIT_FAILURE;
     }
 
 
@@ -91,7 +98,7 @@ int GIT_Revert(int argc, char **argv){
         fwrite(old_commit->files, sizeof(GitFile), old_commit->meta_data.files_count, new_commit_file);
 
         fclose(new_commit_file);
-
+        freeCommit(old_commit);
         loadCommit(new_commit_hash);
 
         saveGitHead(GIT_HEAD_branch->name, true,  new_commit_hash);
@@ -107,4 +114,31 @@ int GIT_Revert(int argc, char **argv){
 
     return EXIT_SUCCESS;
     
+}
+
+bool isRevertPossible(const char *commit_hash){
+    char current_commit_hash[HASH_LEN + 1];
+    strcpy(current_commit_hash, GIT_HEAD_commit_hash);
+
+    while (!areStringsEqual(current_commit_hash, ""))
+    {
+
+        if (areStringsEqual(current_commit_hash, commit_hash)){
+            return true;
+        }
+
+        Commit *commit = openCommit(current_commit_hash);
+
+        if (!areStringsEqual(commit->meta_data.parents_hash[1], "")){
+            // a merge was on the way
+            freeCommit(commit);
+            return false;
+        }
+
+        strcpy(current_commit_hash, commit->meta_data.parents_hash[0]);
+
+        freeCommit(commit);
+    }
+    
+    return false;
 }

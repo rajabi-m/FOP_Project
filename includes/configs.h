@@ -143,6 +143,10 @@
 
 #define REVERT_COMMAND_USAGE "correct usage: giga-git revert -c <commit-hash> [-m <message>] [-n]"
 
+#define TAG_COMMAND_USAGE "correct usage: giga-git tag\n"\
+                          "               giga-git tag show <tag-name>\n"\
+                          "               giga-git tag -a <tag-name> [-m <tag-message>] [-c <commit-id>] [-f]"
+
 #define COMMITS_DIR "commits"
 
 #define OBJECTS_DIR "objects"
@@ -156,5 +160,7 @@
 #define STAGE_HISTORY_FILE_NAME "stage.his"
 
 #define MSG_SHORTCUTS_FILE_NAME "message.wtf"
+
+#define TAGS_FILE_NAME "tags.db"
 
 #define MAIN_BRANCH_NAME "master"

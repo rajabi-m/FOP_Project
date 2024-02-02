@@ -154,4 +154,16 @@ extern char GIT_HEAD_commit_hash[HASH_LEN + 1];
 
 extern bool GIT_is_head_attached;
 
+typedef struct{
+    char name[MAX_USERNAME_LEN + 1];
+    char message[MAX_COMMIT_MSG_LEN + 1];
+    char commit_hash[HASH_LEN + 1];
+    struct UserData user;
+    time_t time;
+} Tag;
+
+extern Tag *GIT_tags_list;
+
+extern int GIT_tags_count;
+
 #endif

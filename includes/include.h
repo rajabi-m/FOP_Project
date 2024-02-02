@@ -36,3 +36,4 @@
 #include "checkout.h"
 #include "log.h"
 #include "revert.h"
+#include "tag.h"
