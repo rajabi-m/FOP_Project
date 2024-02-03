@@ -76,12 +76,13 @@ int GIT_Add(int argc, char **argv){
 int stageFile(const char *path, bool bug_fixer){
     // bug fixer is here to indicate when ever the stage path should be saved in stage.his file or not
 
-    struct stat statbuf;
-    if (stat(path, &statbuf) == -1){
-        printfError("path %s is probably wrong.", path);
-        return EXIT_FAILURE;
-    }
+    
+    
+
     char *processed_path = processPath(path);
+
+    struct stat statbuf;
+    stat(path, &statbuf);
 
     if (strstr(processed_path, GIT_DIR_NAME)){
         printfError("bro tying to stage %s folder XDD", GIT_DIR_NAME);
@@ -93,24 +94,55 @@ int stageFile(const char *path, bool bug_fixer){
     }
 
     if (S_ISDIR(statbuf.st_mode)){
+        // try to restage all files that has been staged.
+        for (int i = 0; i < GIT_stagedfiles_count; i++)
+        {
+            if (areStringsEqual(processed_path, ".")){
+                char *new_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
+                stageFile(new_path, false);
+                free(new_path);
+                continue;
+            }
+
+            char *dir_path = gigaStrcat(2, processed_path, "/");
+            if (strstr(GIT_staging_area[i].path, dir_path) == GIT_staging_area[i].path){ // if file is in this dir
+                char *new_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
+                stageFile(new_path, false);
+                free(new_path);
+            }
+            free(dir_path);
+        }
+        // we need to go through all of its files and directories recursively to see if any new file is in there.
         DIR *directory = opendir(path);
         struct dirent *entry;
         while (entry = readdir(directory))
         {
             if (areStringsEqual(entry->d_name, ".") || areStringsEqual(entry->d_name, "..") || areStringsEqual(entry->d_name, GIT_DIR_NAME)) continue;
-            char *new_file_name = gigaStrcat(3, path, "/", entry->d_name);
-            stageFile(new_file_name, false);
-            free(new_file_name);
+            char *new_file_path = gigaStrcat(3, processed_path, "/", entry->d_name);
+            bool is_new = true;
+            for (int i = 0; i < GIT_stagedfiles_count; i++)
+            {
+                if (areStringsEqual(new_file_path, GIT_staging_area[i].path)){
+                    is_new = false;
+                    break;
+                }
+            }
+            
+            if (is_new){
+                char *full_path = gigaStrcat(3, GIT_parent_dir, "/", new_file_path);
+                stageFile(full_path, false);
+                free(full_path);
+            }
+            free(new_file_path);
+
         }
+        
+
         return EXIT_SUCCESS;
         
     }
 
     FILE *now = fopen(path, "r");
-    if(!now){
-        printfError("file %s does not exist", path);
-        return EXIT_FAILURE;
-    }
 
     
     // checking to see if file is already in the staging area
@@ -123,7 +155,13 @@ int stageFile(const char *path, bool bug_fixer){
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
         if (areStringsEqual(processed_path, GIT_staging_area[i].path)){
+            is_untracked = false;
             
+            if (!now){
+                GIT_staging_area[i].access_code = -1;
+                break;
+            }
+
             FILE *before = openObject(GIT_staging_area[i].object_hash, "r");
             if (!areFilesEqual(before, now)){
                 debug(("file %s has been changed...\n", processed_path));
@@ -137,12 +175,15 @@ int stageFile(const char *path, bool bug_fixer){
                 printfSuccess(("the access code of file %s successfully updated.", path));
             }
             fclose(before);
-            is_untracked = false;
             break;
         }
     }
     
     if (is_untracked){
+        if(!now){
+            printfError("%s does not exist", path);
+            return EXIT_FAILURE;
+        }
         GIT_stagedfiles_count ++;
         GIT_staging_area = realloc(GIT_staging_area, GIT_stagedfiles_count *sizeof(GitFile));
         char object_hash[HASH_LEN + 1];
@@ -154,7 +195,7 @@ int stageFile(const char *path, bool bug_fixer){
     }
 
     free(processed_path);
-    fclose(now);
+    if (now) fclose(now);
 
     
 }
@@ -165,11 +206,10 @@ int syncStagingArea(){
     FILE *staging_area_file = fopen(staging_area_file_path, "wb");
     free(staging_area_file_path);
 
-
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
         char *file_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
-        if (access(file_path, F_OK) == 0 && (GIT_staging_area[i].access_code != -1)){ // if file still exists (-1 access code means that it's removed.)
+        if (GIT_staging_area[i].access_code != -2){ // if file still exists (-1 access code means that it's removed.)
             fwrite(GIT_staging_area + i, sizeof(GitFile), 1, staging_area_file);
         }else{
             debug(("file %s is removed\n", GIT_staging_area[i].path));
@@ -178,7 +218,6 @@ int syncStagingArea(){
     }
     
 
-    // fwrite(GIT_staging_area, sizeof(GitFile), GIT_stagedfiles_count, staging_area_file);
 
     fclose(staging_area_file);
     return EXIT_SUCCESS;
@@ -340,30 +379,75 @@ int GIT_Reset(int argc, char **argv){
 int unstageFile(const char *file_path){
     
     struct stat statbuf;
-    if (stat(file_path, &statbuf) == -1){
-        printfError("path %s is probably wrong.", file_path);
-        return EXIT_FAILURE;
-    }
+    stat(file_path, &statbuf);
 
+    char *processed_path = processPath(file_path);
     if (S_ISDIR(statbuf.st_mode)){
+
+        for (int i = 0; i < GIT_stagedfiles_count; i++)
+        {
+            char *dir_path = gigaStrcat(2, file_path, "/");
+            if (strstr(GIT_staging_area[i].path, dir_path) == GIT_staging_area[i].path){
+                char *full_path = gigaStrcat(3, GIT_parent_dir, "/", GIT_staging_area[i].path);
+                unstageFile(full_path);
+                free(full_path);
+            }
+            free(dir_path);
+        }
+        
+
         DIR *directory = opendir(file_path);
         struct dirent *entry;
         while (entry = readdir(directory))
         {
             if (areStringsEqual(entry->d_name, ".") || areStringsEqual(entry->d_name, "..") || areStringsEqual(entry->d_name, GIT_DIR_NAME)) continue;
-            char *new_file_name = gigaStrcat(3, file_path, "/", entry->d_name);
-            unstageFile(new_file_name);
-            free(new_file_name);
+            char *full_path = gigaStrcat(3, processed_path, "/",  entry->d_name);
+            bool is_new = true;
+            for (int i = 0; i < GIT_stagedfiles_count; i++)
+            {
+                if (areStringsEqual(GIT_staging_area[i].path, full_path)){
+                    is_new = false;
+                    break;
+                }
+            }
+
+            if (is_new){
+                char *file_path = gigaStrcat(3, GIT_parent_dir, "/", full_path);
+                unstageFile(file_path);
+                free(file_path);
+            }
+            
+            free(full_path);
         }
         return EXIT_SUCCESS;
         
     }
 
-    char *processed_path = processPath(file_path);
+    Commit *last_commit = openCommit(GIT_HEAD_commit_hash);
+
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
         if (areStringsEqual(processed_path, GIT_staging_area[i].path)){
-            GIT_staging_area[i].access_code = -1;
+            if(!last_commit){ // so we are at the start
+                GIT_staging_area[i].access_code = -2; // means it should be removed
+            }else{
+                bool found = false;
+                for (int j = 0; j < last_commit->meta_data.files_count; j++)
+                {
+                    if (areStringsEqual(last_commit->files[j].path, processed_path)){
+                        memcpy(&GIT_staging_area[i], &last_commit->files[j] , sizeof(GitFile));
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found){
+                    GIT_staging_area[i].access_code = -2; // means it should be removed
+                }
+
+                freeCommit(last_commit);
+                
+            }
             free(processed_path);
             printfSuccess(("file %s is not staged any more", file_path));
             return EXIT_SUCCESS;

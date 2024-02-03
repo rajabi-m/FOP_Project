@@ -364,6 +364,8 @@ CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_
     result->first_commit_files_n = 0;
     result->second_commit_files = NULL;
     result->second_commit_files_n = 0;
+    result->deleted_files = NULL;
+    result->deleted_files_n = 0;
 
     Commit *first_commit = openCommit(first_commit_hash);
     Commit *second_commit = openCommit(second_commit_hash);
@@ -382,12 +384,15 @@ CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_
         checklist[i] = false;
     }
     
+    
 
     for (int i = 0; i < first_commit->meta_data.files_count; i++)
     {
+        if (first_commit->files[i].access_code == -1) continue;
         bool is_common = false;
         for (int j = 0; j < second_commit->meta_data.files_count; j++)
         {
+            if (second_commit->files[j].access_code == -1) continue;
             if (areStringsEqual(first_commit->files[i].path, second_commit->files[j].path)){
                 is_common = true;
                 checklist[j] = true;
@@ -416,6 +421,7 @@ CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_
     
     for (int i = 0; i < second_commit->meta_data.files_count; i++)
     {
+        if(second_commit->files[i].access_code == -1) continue;
         if (!checklist[i]){
             result->second_commit_files_n ++;
             result->second_commit_files = realloc(result->second_commit_files, sizeof(*result->second_commit_files) * result->second_commit_files_n);
@@ -424,6 +430,98 @@ CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_
             result->second_commit_files[index] = strdup(second_commit->files[i].path);
         }
     }
+
+
+    for (int i = 0; i < first_commit->meta_data.files_count; i++)
+    {
+        if (first_commit->files[i].access_code == -1){ // a deleted file
+            bool unique = true;
+
+            for (int j = 0; j < result->deleted_files_n; j++)
+            {
+                if (areStringsEqual(result->deleted_files[j], first_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->commons_n; j++)
+            {
+                if (areStringsEqual(result->commons[j].file_path, first_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->first_commit_files_n; j++)
+            {
+                if (areStringsEqual(result->first_commit_files[j], first_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->second_commit_files_n; j++)
+            {
+                if (areStringsEqual(result->second_commit_files[j], first_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+    
+            result->deleted_files_n ++;
+            result->deleted_files = realloc(result->deleted_files, result->deleted_files_n * sizeof(char *));
+            result->deleted_files[result->deleted_files_n - 1] = strdup(first_commit->files[i].path);
+        }
+    }
+    
+    for (int i = 0; i < second_commit->meta_data.files_count; i++)
+    {
+        if (second_commit->files[i].access_code == -1){ // a deleted file
+            bool unique = true;
+
+            for (int j = 0; j < result->deleted_files_n; j++)
+            {
+                if (areStringsEqual(result->deleted_files[j], second_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->commons_n; j++)
+            {
+                if (areStringsEqual(result->commons[j].file_path, second_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->first_commit_files_n; j++)
+            {
+                if (areStringsEqual(result->first_commit_files[j], second_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+            for (int j = 0; j < result->second_commit_files_n; j++)
+            {
+                if (areStringsEqual(result->second_commit_files[j], second_commit->files[i].path)){
+                    unique = false;
+                    break;
+                }
+            }
+            if (!unique) continue;
+
+            if (unique){
+                result->deleted_files_n ++;
+                result->deleted_files = realloc(result->deleted_files, result->deleted_files_n * sizeof(char *));
+                result->deleted_files[result->deleted_files_n - 1] = strdup(second_commit->files[i].path);
+            }
+        }
+    }
+
     
     freeCommit(first_commit);
     freeCommit(second_commit);
@@ -449,9 +547,15 @@ void freeCommitDiff(CommitDiff *commit_diff){
         free(commit_diff->second_commit_files[i]);
     }
 
-    free(commit_diff->commons);
-    free(commit_diff->first_commit_files);
-    free(commit_diff->second_commit_files);
+    for (int i = 0; i < commit_diff->deleted_files_n; i++)
+    {
+        free(commit_diff->deleted_files[i]);
+    }
+    
+    if (commit_diff->deleted_files) free(commit_diff->deleted_files);
+    if (commit_diff->commons) free(commit_diff->commons);
+    if (commit_diff->first_commit_files) free(commit_diff->first_commit_files);
+    if (commit_diff->second_commit_files) free(commit_diff->second_commit_files);
     free(commit_diff);
 }
 

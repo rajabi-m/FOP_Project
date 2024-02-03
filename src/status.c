@@ -21,7 +21,8 @@ int GIT_Status(int argc, char **argv){
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
         if (!checklist[i]){
-            printStatusLine(GIT_staging_area[i].path, true, file_is_removed);
+            if (GIT_staging_area[i].access_code != -1)
+                printStatusLine(GIT_staging_area[i].path, true, file_is_removed);
         }
     }
     
@@ -63,12 +64,13 @@ void printStatus(const char *dir_path, bool *checklist){
                     checklist[i] = true;
                     FILE *object = openObject(GIT_staging_area[i].object_hash, "r");
                     FILE *file = fopen(file_path, "r");
-                    if (!areFilesEqual(file, object)){
+                    if (GIT_staging_area[i].access_code == -1){
+                        printStatusLine(processed_path, true, file_is_added);
+                    }else if (!areFilesEqual(file, object)){
                         printStatusLine(processed_path, true, content_is_changed);
                     }else if (getFileAccessCode(file_path) != GIT_staging_area[i].access_code){
                         printStatusLine(processed_path, true, acsscode_is_changed);
                     }
-
                     is_staged = true;
                     fclose(object);
                     fclose(file);

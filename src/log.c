@@ -95,7 +95,20 @@ int GIT_Log(int argc, char **argv){
 }
 
 void printCommit(Commit *commit){
-    printf("commit %s\n", commit->meta_data.hash);
+    printf("commit %s", commit->meta_data.hash);
+    
+    // checking if HEAD is here
+    if (areStringsEqual(GIT_HEAD_commit_hash,  commit->meta_data.hash)){
+        printf(MAG_TEXT" (HEAD)"RESET_TEXT);
+    }
+    // checking if any branch is here
+    for (int i = 0; i < GIT_branches_count; i++)
+    {
+        if (areStringsEqual(GIT_branches_list[i].commit_hash, commit->meta_data.hash)){
+            printf( BLU_TEXT" (%s)"RESET_TEXT,  GIT_branches_list[i].name);
+        }
+    }
+    printf("\n");
     printf("    branch: %s\n", commit->meta_data.branch);
     printf("    message: %s\n", commit->meta_data.message);
     printf("    file count: %d\n", commit->meta_data.files_count);

@@ -22,6 +22,7 @@ int GIT_Init(int argc, char **argv){
     mkfile(GIT_DIR_NAME "/" STAGE_FILE_NAME);
     mkfile(GIT_DIR_NAME "/" STAGE_HISTORY_FILE_NAME);
     mkfile(GIT_DIR_NAME "/" MSG_SHORTCUTS_FILE_NAME);
+    mkfile(GIT_DIR_NAME "/" TAGS_FILE_NAME);
     
     // creating Branches file and adding master branch
     Branch master_branch = {MAIN_BRANCH_NAME, ""};

@@ -78,19 +78,26 @@ bool anyNonCommitedChanges(){
         char *current_file_path = gigaStrcat(3, GIT_parent_dir, "/", last_commit->files[i].path);
         FILE *current_file = fopen(current_file_path, "r");
 
-        if (!current_file){
-            printfError("%s is deleted.", last_commit->files[i].path);
+
+        if (current_file && (last_commit->files[i].access_code == -1)){
+            printfError("%s is added.", last_commit->files[i].path);
             return true;
         }
 
-        if (!areFilesEqual(staged_file, current_file)){
-            printfError("%s is changed.", last_commit->files[i].path);
-            return true;
-        }
+        if (last_commit->files[i].access_code != -1){
+            if (!current_file){
+                printfError("%s is deleted.", last_commit->files[i].path);
+                return true;
+            }
+            if ((!areFilesEqual(staged_file, current_file))){
+                printfError("%s is changed.", last_commit->files[i].path);
+                return true;
+            }
 
-        if (last_commit->files[i].access_code != getFileAccessCode(current_file_path)){
-            printfError("%s access code is changed.", last_commit->files[i].path);
-            return true;
+            if (last_commit->files[i].access_code != getFileAccessCode(current_file_path)){
+                printfError("%s access code is changed.", last_commit->files[i].path);
+                return true;
+            }
         }
 
         free(current_file_path);
@@ -127,7 +134,7 @@ void stepBackward(int count, char *final_hash){
 
 }
 
-void clearDir(const char *dir_path);
+void clearDir();
 
 void loadCommit(const char *hash){
 
@@ -146,11 +153,12 @@ void loadCommit(const char *hash){
     fclose(staging_area_file);
     free(staging_area_file_path);
     // clear working dir
-    clearDir(GIT_parent_dir);
+    clearDir();
 
     // loading new files
     for (int i = 0; i < commit->meta_data.files_count; i++)
     {
+        if (commit->files[i].access_code == -1) continue;
         char *dest_path = gigaStrcat(3, GIT_parent_dir, "/", commit->files[i].path);
         char *object_path = gigaStrcat(7, GIT_parent_dir, "/", GIT_DIR_NAME, "/", OBJECTS_DIR, "/", commit->files[i].object_hash);
         if(!copyFile(dest_path, object_path, 10000)){
@@ -169,25 +177,38 @@ void loadCommit(const char *hash){
 
 }
 
-void clearDir(const char *dir_path){
-    DIR *directory = opendir(dir_path);
+void clearDir(){
 
-    if (!directory){
-        printfError("error while trying to delete dir %s", dir_path);
+    Commit *current_commit = openCommit(GIT_HEAD_commit_hash);
+
+    if (!current_commit){
+        printError("could not find HEAD in the repository");
         exit(EXIT_FAILURE);
     }
+
+    for (int i = 0; i < current_commit->meta_data.files_count; i++)
+    {
+        char *file_path = gigaStrcat(3, GIT_parent_dir, "/", current_commit->files[i].path);
+        remove(file_path);
+        free(file_path);
+    }
+    freeCommit(current_commit);
+
+    // removing empty directories
+    DIR *directory = opendir(GIT_parent_dir);
 
     struct  dirent *entry;
 
     while(entry = readdir(directory)){
         if (areStringsEqual(entry->d_name, ".") || areStringsEqual(entry->d_name, "..") || areStringsEqual(entry->d_name, GIT_DIR_NAME)) continue;
-        char *new_path = gigaStrcat(3, dir_path, "/", entry->d_name);
         if(entry->d_type == DT_DIR){
-            clearDir(new_path);
-        }else{ // so it is a file
-            remove(new_path);
+            char *new_path = gigaStrcat(3, GIT_parent_dir, "/", entry->d_name);
+            rmdir(new_path);
+            free(new_path);
         }
-        free(new_path);
     }
+    
+
+    
 
 }

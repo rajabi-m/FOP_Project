@@ -49,7 +49,7 @@ int GIT_Merge(int argc, char **argv){
     char *hash = generateRandomString(HASH_LEN);
     Commit new_commit;
     strcpy(new_commit.meta_data.branch, branch1_name);
-    new_commit.meta_data.files_count = branch_diff->commons_n + branch_diff->first_commit_files_n + branch_diff->second_commit_files_n;
+    new_commit.meta_data.files_count = branch_diff->commons_n + branch_diff->first_commit_files_n + branch_diff->second_commit_files_n + branch_diff->deleted_files_n;
     strcpy(new_commit.meta_data.hash, hash);
     sprintf(new_commit.meta_data.message, "merging branch %s with branch %s.", branch1_name, branch2_name);
     strcpy(new_commit.meta_data.parents_hash[0], branch1->commit_hash);
@@ -213,6 +213,17 @@ int GIT_Merge(int argc, char **argv){
         fclose(new_object);
     }
     
+    // now the deleted files
+    for (int i = 0; i < branch_diff->deleted_files_n; i++)
+    {
+        strcpy(new_commit.files[index].path, branch_diff->deleted_files[i]);
+        strcpy(new_commit.files[index].object_hash, "");
+        new_commit.files[index].access_code = -1;
+        index ++;
+    }
+    
+
+
     freeCommit(branch1_commit);
     freeCommit(branch2_commit);
 

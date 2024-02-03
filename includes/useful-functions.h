@@ -180,6 +180,8 @@ typedef struct {
         } diffs;
     } *commons;
     int commons_n;
+    char **deleted_files;
+    int deleted_files_n;
 } CommitDiff;
 
 CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_commit_hash);
