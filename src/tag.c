@@ -150,7 +150,7 @@ void loadTags(){
 void printAllTags(){
     for (int i = 0; i < GIT_tags_count; i++)
     {
-        printf("%s\n", GIT_tags_list[i].name);
+        printf("󰓹 %s\n", GIT_tags_list[i].name);
     }
     
 }
@@ -170,11 +170,11 @@ void printTag(const char *tag_name){
         printfError("there is no tag called %s.", tag_name);
     }
 
-    printf("tag name: %s\ncommit: %s\nAuthor: %s<%s>\nDate: %s",tag->name, tag->commit_hash, tag->user.username
+    printf("󰓹 Tag name: %s\n󰜘 Commit: %s\n Author: %s<%s>\n Date: %s",tag->name, tag->commit_hash, tag->user.username
                                                                    ,tag->user.email, asctime(localtime(&tag->time)));
 
     if (!areStringsEqual(tag->message, "")){
-        printf("Message: %s\n", tag->message);
+        printf("󰚢 Message: %s\n", tag->message);
     }
 
 }

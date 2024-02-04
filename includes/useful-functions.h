@@ -78,12 +78,16 @@ char *findGitParentDir();
  * @param x The format string for the error message.
  * @param y The argument(s) to be included in the formatted error message.
  */
-#define printfError(x, y) printf(RED_TEXT "Error: " x " " RESET_TEXT "\n", y)
+#define printfError(x, y) printf(RED_TEXT " " x " " RESET_TEXT "\n", y)
 
 
-#define printfSuccess(x) printf(BLU_TEXT "Success: ");\
+#define printfSuccess(x) printf(BLU_TEXT " ");\
                         printf x;\
                         printf("\n" RESET_TEXT)
+
+#define printfWarning(x) printf(YEL_TEXT" ");\
+                         printf x;\
+                         printf("\n" RESET_TEXT);
 
 /**
  * @brief Represents an array of tokens.
@@ -196,4 +200,7 @@ bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size);
 
 bool wildcardMatch(char *wild, char *word);
 
+
 #endif
+
+

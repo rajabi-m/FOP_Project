@@ -18,7 +18,7 @@ int GIT_Commit(int argc, char **argv){
     loadMsgShortcuts();
 
     if (GIT_stagedfiles_count < 1){
-        printError("at least stage 1 file bro ://////////////");
+        printError("you should at least stage 1 file.");
         exit(EXIT_FAILURE);
     }
 
@@ -33,7 +33,7 @@ int GIT_Commit(int argc, char **argv){
     char *msg;
     if (option == 'm'){
         if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
-            printError("you picked the wrong len, foo!");
+            printError("Commit message is too long.");
             return(EXIT_FAILURE);
         }
 
@@ -43,7 +43,7 @@ int GIT_Commit(int argc, char **argv){
     if (option == 's'){
         msg = getShortcutMsg(optarg);
         if (!msg){
-            printfError("there is no shortcut called %s", optarg);
+            printfError("there is no shortcut called %s.", optarg);
             return EXIT_FAILURE;
         }
     }
@@ -51,7 +51,7 @@ int GIT_Commit(int argc, char **argv){
     
 
     if (!GIT_is_head_attached){
-        printError("bro thinks he has a time travel machine XD");
+        printError("You cannot commit your changes while HEAD is not attached.\nCreate a new branch if you want to make changes.");
         exit(EXIT_FAILURE);
     }
 
@@ -102,7 +102,7 @@ int GIT_Commit(int argc, char **argv){
     saveGitHead(GIT_HEAD_branch->name, true, hash);
     free(hash);
 
-    printfSuccess(("%s commit created at %s", commit.meta_data.hash, asctime(localtime(&current_time))));
+    printfSuccess(("%s commit created at  %sby  %s.", commit.meta_data.hash, asctime(localtime(&current_time)), GIT_userdata.username));
 
     return EXIT_SUCCESS;
 
@@ -170,14 +170,14 @@ int GIT_Set(int argc, char **argv){
 
         if (option == 's') {
             if (strlen(optarg) > MAX_USERNAME_LEN){
-                printError("you picked the wrong len foo.");
+                printError("shortcut name is too long.");
                 exit(EXIT_FAILURE);
             }
             shortcut = strdup(optarg);
         }
         if (option == 'm') {
             if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
-                printError("you picked the wrong len foo.");
+                printError("Commit message is too long.");
                 exit(EXIT_FAILURE);
             }
             message = strdup(optarg);
@@ -185,13 +185,13 @@ int GIT_Set(int argc, char **argv){
     }
 
     if (!(shortcut && message)){
-        printError("one arg is missing :/");
+        printError("one arg is missing.");
         return(EXIT_FAILURE);
     }
 
     // check if shortcut exists
     if (getShortcutMsg(shortcut)){
-        printfError("there is a shortcut called %s", shortcut);
+        printfError("There is already a shortcut called %s.", shortcut);
         return(EXIT_FAILURE);
     }
 
@@ -219,14 +219,14 @@ int GIT_Replace(int argc, char **argv){
 
         if (option == 's') {
             if (strlen(optarg) > MAX_USERNAME_LEN){
-                printError("you picked the wrong len foo.");
+                printError("Shortcut name is too long.");
                 return(EXIT_FAILURE);
             }
             shortcut = strdup(optarg);
         }
         if (option == 'm') {
             if (strlen(optarg) > MAX_COMMIT_MSG_LEN){
-                printError("you picked the wrong len foo.");
+                printError("Commit message is too long.");
                 return(EXIT_FAILURE);
             }
             message = strdup(optarg);
@@ -234,14 +234,14 @@ int GIT_Replace(int argc, char **argv){
     }
 
     if (!(shortcut && message)){
-        printError("one arg is missing :/");
+        printError("one arg is missing.");
         return(EXIT_FAILURE);
     }
 
     // check if shortcut exists
     char *old_msg = getShortcutMsg(shortcut);
     if (!old_msg){
-        printfError("there is no shortcut called %s", shortcut);
+        printfError("there is no shortcut called %s.", shortcut);
         return(EXIT_FAILURE);
     }
 
@@ -276,7 +276,7 @@ int GIT_Remove(int argc, char **argv){
         }
     }
 
-    printfError("no msg shortcut called %s", optarg);
+    printfError("There is no commit-message shortcut called %s.", optarg);
     return EXIT_FAILURE;
     
 

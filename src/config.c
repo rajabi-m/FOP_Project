@@ -28,12 +28,12 @@ int GIT_Config(int argc, char *argv[]){
 
     // validation
     if (argc != correct_arg_count){
-        printError("what the hell is this amount of args");
+        printError("Too many args for this command.");
         return EXIT_FAILURE;
     }
 
     if ((!global) && (!GIT_parent_dir)){
-        printError("you should be in a giga git dir to be able to change stuff locally!");
+        printError("you should be in a giga-git dir to be able to change stuff locally!");
         return EXIT_FAILURE;
     }
 
@@ -113,7 +113,7 @@ int changeUserData(const char *variable, const char *value, const bool is_global
     }
     fclose(user_data_file);
 
-    printfSuccess(("user %s successfully changed to %s", variable, value));
+    printfSuccess(("user %s successfully changed to %s.", variable, value));
     return EXIT_SUCCESS;
 }
 
@@ -126,18 +126,12 @@ int loadUserData(){
     
     FILE *user_data_file = fopen(user_data_file_path, "rb");
 
-    if (!user_data_file){
-        printError("no global user data found! please use 'config --global user.*' to create one");
-        exit(EXIT_FAILURE);
-    }
-
-    if (fread(&GIT_userdata, sizeof(GIT_userdata), 1, user_data_file) < 1){
-        printError("no data on global user data file! please use 'config --global user.*'");
+    if (user_data_file){
+        fread(&GIT_userdata, sizeof(GIT_userdata), 1, user_data_file);
         fclose(user_data_file);
-        exit(EXIT_FAILURE);
     }
 
-    fclose(user_data_file);
+
     
 
 

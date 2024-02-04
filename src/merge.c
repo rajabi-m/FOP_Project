@@ -148,12 +148,12 @@ int GIT_Merge(int argc, char **argv){
                     while (true)
                     {
                         char input;
-                        printf("------------<%s>>>\n", branch_diff->commons[i].file_path);
-                        printf("<%s><%d>\n", branch1_name, branch_diff->commons[i].diffs.diff[diff_index].first_line_n);
-                        printf("--- %s\n", branch_diff->commons[i].diffs.diff[diff_index].first);
-                        printf("<%s><%d>\n", branch2_name, branch_diff->commons[i].diffs.diff[diff_index].second_line_n);
-                        printf("--- %s\n", branch_diff->commons[i].diffs.diff[diff_index].second);
-                        printf("<<<%s>------------\n", branch_diff->commons[i].file_path);
+                        printf("󰇘󰇘󰇘󰇘"RED_TEXT"CONFLICT"RESET_TEXT"󰇘󰇘󰇘󰇘<"CYN_TEXT"%s"RESET_TEXT">>>\n", branch_diff->commons[i].file_path);
+                        printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch1_name, branch_diff->commons[i].diffs.diff[diff_index].first_line_n);
+                        printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].first);
+                        printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch2_name, branch_diff->commons[i].diffs.diff[diff_index].second_line_n);
+                        printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].second);
+                        printf("<<<"CYN_TEXT"%s"RESET_TEXT">󰇘󰇘󰇘󰇘"RED_TEXT"CONFLICT"RESET_TEXT"󰇘󰇘󰇘󰇘\n", branch_diff->commons[i].file_path);
                         printf("what do you want to do? ->");
                         scanf("\n%c", &input);
                         switch(input){

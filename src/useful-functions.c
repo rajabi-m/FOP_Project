@@ -3,7 +3,7 @@
 
 
 bool printError(const char *message) {
-    printf(RED_TEXT "Error: %s" RESET_TEXT "\n", message);
+    printf(RED_TEXT "  %s" RESET_TEXT "\n", message);
     return false;
 }
 

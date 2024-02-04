@@ -90,10 +90,11 @@ void printStatus(const char *dir_path, bool *checklist){
 }
 
 void printStatusLine(const char *file, bool staged, FileStatus file_status){
-    char stage_char, mode_char;
+    char mode_char;
+    char stage_char[4];
 
-    if (staged) {stage_char = '+'; printf(YEL_TEXT);}
-    else        {stage_char = '-'; printf(RED_TEXT);}
+    if (staged) {strcpy(stage_char, ""); printf(YEL_TEXT);}
+    else        {strcpy(stage_char, ""); printf(RED_TEXT);}
 
     switch (file_status){
         case content_is_changed:{
@@ -116,6 +117,6 @@ void printStatusLine(const char *file, bool staged, FileStatus file_status){
     
 
 
-    printf("%c%c -> %s\n"RESET_TEXT, stage_char, mode_char, file);
+    printf("%s %c  %s\n"RESET_TEXT, stage_char, mode_char, file);
 
 }

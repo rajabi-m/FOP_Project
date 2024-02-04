@@ -1,7 +1,7 @@
 #include <linux/limits.h>
 
 // debug
-#define __DEBUG_MODE_
+// #define __DEBUG_MODE_
 
 #ifdef __DEBUG_MODE_
 #define debug(x) printf x
@@ -38,13 +38,13 @@
 /**
  * @brief Userdata configuration file name.
  */
-#define USERDATA_CONFIG_FILE "userdata.chad"
+#define USERDATA_CONFIG_FILE "userdata.db"
 
 
 /**
  * @brief Alias file name.
  */
-#define ALIAS_FILE "alias.sigma"
+#define ALIAS_FILE "alias.db"
 
 /**
  * @brief Maximum length for file paths.
@@ -153,15 +153,15 @@
 
 #define OBJECTS_DIR "objects"
 
-#define HEAD_FILE_NAME "saresh.head"
+#define HEAD_FILE_NAME "HEAD.giga-git"
 
-#define STAGE_FILE_NAME "stage.nerd"
+#define STAGE_FILE_NAME "STAGE.giga-git"
 
-#define BRANCHES_FILE_NAME "branches.shakhe"
+#define BRANCHES_FILE_NAME "branches.db"
 
-#define STAGE_HISTORY_FILE_NAME "stage.his"
+#define STAGE_HISTORY_FILE_NAME "stage-history.db"
 
-#define MSG_SHORTCUTS_FILE_NAME "message.wtf"
+#define MSG_SHORTCUTS_FILE_NAME "message-shortcuts.db"
 
 #define TAGS_FILE_NAME "tags.db"
 

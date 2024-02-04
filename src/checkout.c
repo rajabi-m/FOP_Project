@@ -80,22 +80,22 @@ bool anyNonCommitedChanges(){
 
 
         if (current_file && (last_commit->files[i].access_code == -1)){
-            printfError("%s is added.", last_commit->files[i].path);
+            printfWarning(("%s is added.", last_commit->files[i].path));
             return true;
         }
 
         if (last_commit->files[i].access_code != -1){
             if (!current_file){
-                printfError("%s is deleted.", last_commit->files[i].path);
+                printfWarning(("%s is deleted.", last_commit->files[i].path));
                 return true;
             }
             if ((!areFilesEqual(staged_file, current_file))){
-                printfError("%s is changed.", last_commit->files[i].path);
+                printfWarning(("%s is changed.", last_commit->files[i].path));
                 return true;
             }
 
             if (last_commit->files[i].access_code != getFileAccessCode(current_file_path)){
-                printfError("%s access code is changed.", last_commit->files[i].path);
+                printfWarning(("%s access code is changed.", last_commit->files[i].path));
                 return true;
             }
         }
@@ -119,7 +119,7 @@ void stepBackward(int count, char *final_hash){
     {
         Commit *commit = openCommit(current_commit_hash);
         if (!commit){
-            printError("step count is too much :/");
+            printError("You cannot go back this far.");
             exit(EXIT_FAILURE);
         }
         free(current_commit_hash);

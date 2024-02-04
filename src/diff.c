@@ -97,7 +97,7 @@ int GIT_Diff(int argc, char **argv){
 
         for (int i = 0; i < count; i++)
         {
-            printf("<%s><%d>\n%s\n<%s><%d>\n%s\n", file1_path, difference[i].first_line_n, difference[i].first, file2_path, difference[i].second_line_n, difference[i].second);
+            printf(BLU_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n"RED_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, file1_path, difference[i].first_line_n, difference[i].first, file2_path, difference[i].second_line_n, difference[i].second);
         }
     }else if (diff_mode == compare_commits){
         if (!(first_commit_hash && second_commit_hash)){
@@ -121,27 +121,27 @@ int printCommitDiffs(const char *first_commit_hash, const char *second_commit_ha
         return EXIT_FAILURE;
     }
 
-    if (commit_diff->first_commit_files_n) printf("files that exist only in commit %s:\n", first_commit_hash);
+    if (commit_diff->first_commit_files_n) printf(BLU_TEXT"󰈔 Files that only exist in commit %s:\n", first_commit_hash);
     for (int i = 0; i < commit_diff->first_commit_files_n; i++)
     {
-        printf("---- %s\n", commit_diff->first_commit_files[i]);
+        printf(CYN_TEXT"󰇘󰇘󰇘󰇘 %s\n"RESET_TEXT, commit_diff->first_commit_files[i]);
     }
-    if (commit_diff->second_commit_files_n) printf("files that exist only in commit %s:\n", second_commit_hash);
+    if (commit_diff->second_commit_files_n) printf(RED_TEXT"󰈔 Files that only exist in commit %s:\n", second_commit_hash);
     for (int i = 0; i < commit_diff->second_commit_files_n; i++)
     {
-        printf("---- %s\n", commit_diff->second_commit_files[i]);
+        printf(YEL_TEXT"󰇘󰇘󰇘󰇘 %s\n"RESET_TEXT, commit_diff->second_commit_files[i]);
     }
 
-    printf("commons:\n");
+    printf(GRN_TEXT"󰈔 Shared files:\n");
     for (int i = 0; i < commit_diff->commons_n; i++)
     {
-        printf("---- %s\n", commit_diff->commons[i].file_path);
+        printf(MAG_TEXT"󰇘󰇘󰇘󰇘 󰈔 %s\n", commit_diff->commons[i].file_path);
         for (int j = 0; j < commit_diff->commons[i].diffs.diff_count; j++)
         {
-            printf("-------- <%s><%d>\n", first_commit_hash, commit_diff->commons[i].diffs.diff[j].first_line_n);
-            printf("------------ %s\n", commit_diff->commons[i].diffs.diff[j].first);
-            printf("-------- <%s><%d>\n", second_commit_hash, commit_diff->commons[i].diffs.diff[j].second_line_n);
-            printf("------------ %s\n", commit_diff->commons[i].diffs.diff[j].second);
+            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "BLU_TEXT"󰜘 %s 󰞷 %d\n", first_commit_hash, commit_diff->commons[i].diffs.diff[j].first_line_n);
+            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n", commit_diff->commons[i].diffs.diff[j].first);
+            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "RED_TEXT"󰜘 %s 󰞷 %d\n", second_commit_hash, commit_diff->commons[i].diffs.diff[j].second_line_n);
+            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, commit_diff->commons[i].diffs.diff[j].second);
         }
         
     }

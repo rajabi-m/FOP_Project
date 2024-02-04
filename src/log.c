@@ -95,24 +95,24 @@ int GIT_Log(int argc, char **argv){
 }
 
 void printCommit(Commit *commit){
-    printf("commit %s", commit->meta_data.hash);
+    printf(CYN_TEXT"󰜘 Commit %s"RESET_TEXT, commit->meta_data.hash);
     
     // checking if HEAD is here
     if (areStringsEqual(GIT_HEAD_commit_hash,  commit->meta_data.hash)){
-        printf(MAG_TEXT" (HEAD)"RESET_TEXT);
+        printf(MAG_TEXT" (  HEAD)"RESET_TEXT);
     }
     // checking if any branch is here
     for (int i = 0; i < GIT_branches_count; i++)
     {
         if (areStringsEqual(GIT_branches_list[i].commit_hash, commit->meta_data.hash)){
-            printf( BLU_TEXT" (%s)"RESET_TEXT,  GIT_branches_list[i].name);
+            printf( BLU_TEXT" ( %s)"RESET_TEXT,  GIT_branches_list[i].name);
         }
     }
     printf("\n");
-    printf("    branch: %s\n", commit->meta_data.branch);
-    printf("    message: %s\n", commit->meta_data.message);
-    printf("    file count: %d\n", commit->meta_data.files_count);
-    printf("    by %s<%s> on %s\n", commit->meta_data.user.username, commit->meta_data.user.email, asctime(localtime(&commit->meta_data.time)));
+    printf(WHT_TEXT"     branch: %s\n", commit->meta_data.branch);
+    printf("    󰚢 message: %s\n", commit->meta_data.message);
+    printf("    󰆙 filecount: %d\n", commit->meta_data.files_count);
+    printf("    by  %s<%s> on  %s\n"RESET_TEXT, commit->meta_data.user.username, commit->meta_data.user.email, asctime(localtime(&commit->meta_data.time)));
 }
 
 bool logFilter_BRANCH(Commit *commit, const char *arg){

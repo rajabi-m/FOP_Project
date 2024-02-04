@@ -11,11 +11,6 @@ int GIT_Add(int argc, char **argv){
 
     srand((unsigned) time(NULL)); // seeding for createObject function
 
-    if (!GIT_parent_dir){
-        printError("you should be in a giga-git dir t obe able to do this !");
-        exit(EXIT_FAILURE);
-    }
-
     char mode = '0'; // normal mode
 
     struct option add_options[] = {
@@ -85,7 +80,7 @@ int stageFile(const char *path, bool bug_fixer){
     stat(path, &statbuf);
 
     if (strstr(processed_path, GIT_DIR_NAME)){
-        printfError("bro tying to stage %s folder XDD", GIT_DIR_NAME);
+        printfError("you cannot stage %s.", GIT_DIR_NAME);
         exit(EXIT_FAILURE);
     }
 
@@ -293,14 +288,14 @@ void checkStageState(const char *dir_path, uint32_t depth, uint32_t current_dept
             for (int i = 0; i < GIT_stagedfiles_count; i++)
             {
                 if(areStringsEqual(processed_path, GIT_staging_area[i].path)){
-                    printf(GRN_TEXT "STAGED : " RESET_TEXT "%s\n", processed_path);
+                    printf(GRN_TEXT " TRACKED : " RESET_TEXT "%s\n", processed_path);
                     staged = true;
                     break;
                 }
             }
 
             if (!staged){
-                printf(YEL_TEXT "NOT STAGED : " RESET_TEXT "%s\n", processed_path);
+                printf(YEL_TEXT " UNTRACKED : " RESET_TEXT "%s\n", processed_path);
             }
         
 
@@ -332,7 +327,7 @@ int GIT_Reset(int argc, char **argv){
 
     struct option reset_options[] = {
         {"multi", no_argument, NULL, 'f'},
-        {"redo", no_argument, NULL, 'r'},
+        {"undo", no_argument, NULL, 'r'},
         {0, 0 ,0 ,0}
     };
 
@@ -449,7 +444,7 @@ int unstageFile(const char *file_path){
                 
             }
             free(processed_path);
-            printfSuccess(("file %s is not staged any more", file_path));
+            printfSuccess(("file %s is not staged anymore.", file_path));
             return EXIT_SUCCESS;
         }
     }
@@ -464,7 +459,7 @@ void redoLastStage(){
     line[0] = '\0';
 
     if (!popStageHistory(line)){
-        printError("stage history is empty");
+        printError("stage history is empty.");
         return;
     }
 

@@ -7,14 +7,14 @@ int GIT_Branch(int argc, char **argv){
     if (argc == 2){
 
         if (GIT_branches_count <= 0){
-            printError("no branch found :/");
+            printError("no branch found.");
             exit(EXIT_FAILURE);
         }
 
         for (int i = 0; i < GIT_branches_count; i++)
         {
-            if (GIT_HEAD_branch == GIT_branches_list + i) printf("--> ");
-            printf("%s-'%s'\n", GIT_branches_list[i].name, GIT_branches_list[i].commit_hash);
+            if (GIT_HEAD_branch == GIT_branches_list + i) printf(BLU_TEXT);
+            printf("%s->"CYN_TEXT"'%s'\n"RESET_TEXT, GIT_branches_list[i].name, GIT_branches_list[i].commit_hash);
         }
         
         return EXIT_SUCCESS;
@@ -115,7 +115,7 @@ void loadGitHead(){
     GIT_HEAD_branch = getBranchByName(head_branch_name);
 
     if (!GIT_HEAD_branch){
-        printError("core pokid. in branch aslan vojood ndre!");
+        printError("core exploded.\nA branch that should exist, doesn't.");
         exit(EXIT_FAILURE);
     }
 
