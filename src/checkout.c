@@ -177,6 +177,8 @@ void loadCommit(const char *hash){
 
 }
 
+void clearEmptyDirs(const char *path);
+
 void clearDir(){
 
     Commit *current_commit = openCommit(GIT_HEAD_commit_hash);
@@ -195,20 +197,23 @@ void clearDir(){
     freeCommit(current_commit);
 
     // removing empty directories
-    DIR *directory = opendir(GIT_parent_dir);
+    
+    clearEmptyDirs(GIT_parent_dir);
+
+}
+
+void clearEmptyDirs(const char *path){
+    DIR *directory = opendir(path);
 
     struct  dirent *entry;
 
     while(entry = readdir(directory)){
         if (areStringsEqual(entry->d_name, ".") || areStringsEqual(entry->d_name, "..") || areStringsEqual(entry->d_name, GIT_DIR_NAME)) continue;
         if(entry->d_type == DT_DIR){
-            char *new_path = gigaStrcat(3, GIT_parent_dir, "/", entry->d_name);
+            char *new_path = gigaStrcat(3, path, "/", entry->d_name);
+            clearEmptyDirs(new_path);
             rmdir(new_path);
             free(new_path);
         }
     }
-    
-
-    
-
 }

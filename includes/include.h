@@ -11,6 +11,8 @@
 #endif
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <libgen.h>
 #include <errno.h>
 #include <stdarg.h>
 #include <linux/limits.h>

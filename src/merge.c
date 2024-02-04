@@ -175,6 +175,12 @@ int GIT_Merge(int argc, char **argv){
                                 exit(EXIT_SUCCESS);
                                 break;
                             }
+                            case 'e':{
+                                char line[MAX_LINE_LEN];
+                                scanf("%s",  line);
+                                fprintf(new_object, "%s\n", line);
+                                break;
+                            }
                             default:
                                 continue;
                         }

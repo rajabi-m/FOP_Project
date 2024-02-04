@@ -568,8 +568,22 @@ bool areFilesEqual(FILE *file1, FILE *file2){
     return (diff_count == 0);
 }
 
+int createDirectories(const char *path) {
+    // Create directories recursively
+    char *what = strdup(path);
+    char *command = gigaStrcat(3, "mkdir -p \"", dirname(what), "\"");
+    int result = system(command);
+    free(command);
+
+    return result;
+}
+
 
 bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size){
+    if (createDirectories(dest_path) == -1){
+        printError("could not create directories.");
+        return false;
+    }
     FILE *dest = fopen(dest_path, "wb");
     FILE *src = fopen(src_path, "rb");
 
@@ -598,6 +612,14 @@ bool copyFile(const char *dest_path, const char *src_path, size_t buffer_size){
 
 // random functions
 
+void realpathCommandLine(const char *path, char *res){
+    char *command = gigaStrcat(3, "realpath -m \"", path, "\"");
+    FILE *terminal = popen(command, "r");
+    fscanf(terminal, "%[^\n]", res);
+    pclose(terminal);
+    free(command);
+}
+
 char *processPath(const char *relative_path){
 
     if (!GIT_parent_dir){
@@ -606,7 +628,7 @@ char *processPath(const char *relative_path){
 
     char absolute_path[MAX_PATH_LEN];
 
-    realpath(relative_path, absolute_path);
+    realpathCommandLine(relative_path, absolute_path);
 
     if (strlen(absolute_path) < strlen(GIT_parent_dir)){
         return NULL;
@@ -624,6 +646,7 @@ char *processPath(const char *relative_path){
     }
 
     res = strdup(absolute_path + strlen(GIT_parent_dir) + 1);
+
 
     return res;
 }

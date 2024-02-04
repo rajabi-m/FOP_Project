@@ -72,7 +72,6 @@ int stageFile(const char *path, bool bug_fixer){
     // bug fixer is here to indicate when ever the stage path should be saved in stage.his file or not
 
     
-    
 
     char *processed_path = processPath(path);
 
@@ -150,6 +149,8 @@ int stageFile(const char *path, bool bug_fixer){
     for (int i = 0; i < GIT_stagedfiles_count; i++)
     {
         if (areStringsEqual(processed_path, GIT_staging_area[i].path)){
+
+
             is_untracked = false;
             
             if (!now){
