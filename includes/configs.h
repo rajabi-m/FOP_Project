@@ -149,6 +149,8 @@
 
 #define DIFF_COMMAND_USAGE "correct usage: giga-git diff -f <file1> -f <file2> [--line1 <start-end>] [--line2 <start-end>]"
 
+#define GREP_COMMAND_USAGE "correct usage: giga-git grep -f <file> -p <word> [-c <commit-id>] [-n]"
+
 #define COMMITS_DIR "commits"
 
 #define OBJECTS_DIR "objects"

@@ -41,3 +41,4 @@
 #include "tag.h"
 #include "diff.h"
 #include "merge.h"
+#include "grep.h"
