@@ -34,6 +34,14 @@ int GIT_Init(int argc, char **argv){
     FILE *head_file = fopen(GIT_DIR_NAME "/" HEAD_FILE_NAME, "w");
     fputs(MAIN_BRANCH_NAME",1,", head_file); // this 1 indicates that head is attached
     fclose(head_file);
+    
+    // creating pre-commit file
+    char *hooks_file_path = gigaStrcat(7, GIT_parent_dir, "/", GIT_DIR_NAME, "/", HOOKS_FILE_NAME);
+    FILE *hooks_file = fopen(hooks_file_path, "w");
+    fprintf(hooks_file, "0,0,0,0,");
+    free(hooks_file_path);
+    fclose(hooks_file);
+
 
 
     printfSuccess(("git folder created successfully!."));

@@ -5,7 +5,7 @@ int doCommand(struct Alias *alias);
 
 int main(){
 
-    char command[] = "giga-git grep -f a.txt -p h?y -n";
+    char command[] = "giga-git pre-commit";
     TokenArray tokenized = parseCommand(command);
     
 
@@ -30,6 +30,7 @@ int main(){
     if (!areArgsValid(argc, argv)){
         exit(EXIT_FAILURE);
     }
+
 
     for (int i = 0; GIT_commands_list[i].command_name; i++)
     {

@@ -42,3 +42,4 @@
 #include "diff.h"
 #include "merge.h"
 #include "grep.h"
+#include "pre-commit.h"

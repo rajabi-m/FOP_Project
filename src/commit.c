@@ -62,6 +62,8 @@ int GIT_Commit(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
+    // TODO: add pre-commit
+
     time_t current_time;
     time(&current_time);
     srand((unsigned)(current_time + GIT_stagedfiles_count));

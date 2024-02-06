@@ -97,7 +97,10 @@ int GIT_Diff(int argc, char **argv){
 
         for (int i = 0; i < count; i++)
         {
-            printf(BLU_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n"RED_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, file1_path, difference[i].first_line_n, difference[i].first, file2_path, difference[i].second_line_n, difference[i].second);
+            // printf(BLU_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n"RED_TEXT"󰈔 %s 󰞷 %d\n"WHT_TEXT"󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, file1_path, difference[i].first_line_n, difference[i].first, file2_path, difference[i].second_line_n, difference[i].second);
+            printDifferences(difference + i, file1_path, file2_path, "󰈔");
+            printf("------------------------------------------\n");
+
         }
     }else if (diff_mode == compare_commits){
         if (!(first_commit_hash && second_commit_hash)){
@@ -138,10 +141,12 @@ int printCommitDiffs(const char *first_commit_hash, const char *second_commit_ha
         printf(MAG_TEXT"󰇘󰇘󰇘󰇘 󰈔 %s\n", commit_diff->commons[i].file_path);
         for (int j = 0; j < commit_diff->commons[i].diffs.diff_count; j++)
         {
-            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "BLU_TEXT"󰜘 %s 󰞷 %d\n", first_commit_hash, commit_diff->commons[i].diffs.diff[j].first_line_n);
-            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n", commit_diff->commons[i].diffs.diff[j].first);
-            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "RED_TEXT"󰜘 %s 󰞷 %d\n", second_commit_hash, commit_diff->commons[i].diffs.diff[j].second_line_n);
-            printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, commit_diff->commons[i].diffs.diff[j].second);
+            // printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "BLU_TEXT"󰜘 %s 󰞷 %d\n", first_commit_hash, commit_diff->commons[i].diffs.diff[j].first_line_n);
+            // printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "CYN_TEXT"%s\n", commit_diff->commons[i].diffs.diff[j].first);
+            // printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "RED_TEXT"󰜘 %s 󰞷 %d\n", second_commit_hash, commit_diff->commons[i].diffs.diff[j].second_line_n);
+            // printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "YEL_TEXT"%s\n"RESET_TEXT, commit_diff->commons[i].diffs.diff[j].second);
+
+            printDifferences(&commit_diff->commons[i].diffs.diff[j], first_commit_hash, second_commit_hash, "󰜘");
         }
         
     }

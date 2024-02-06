@@ -171,6 +171,8 @@ Difference *compareFilesLineByLineV2(FILE *file1, FILE *file2, int file1_start, 
 
 void freeDifference(Difference *difference, int count);
 
+void printDifferences(Difference *difference, const char *first_label, const char *second_label, const char *icon);
+
 typedef struct {
     char **first_commit_files;
     int first_commit_files_n;

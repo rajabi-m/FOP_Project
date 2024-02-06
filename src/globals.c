@@ -18,6 +18,7 @@ struct Command GIT_commands_list_array[] = {
     {"diff", 5, 10, DIFF_COMMAND_USAGE, GIT_Diff, false},
     {"merge", 4, 4, "ay yo", GIT_Merge, false},
     {"grep", 6, 9, GREP_COMMAND_USAGE, GIT_Grep, false},
+    {"pre-commit", 2, INT32_MAX, "GO LEARN HOOKS BRO", GIT_PreCommit, false},
     {NULL, 0, 0, NULL, NULL} // just to show that it is the end of the commands list
 };
 

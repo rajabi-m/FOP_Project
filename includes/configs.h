@@ -167,4 +167,6 @@
 
 #define TAGS_FILE_NAME "tags.db"
 
+#define HOOKS_FILE_NAME "hooks.db"
+
 #define MAIN_BRANCH_NAME "master"

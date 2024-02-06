@@ -356,6 +356,59 @@ void freeDifference(Difference *difference, int count){
 }
 
 
+void printDifferences(Difference *difference, const char *first_label, const char *second_label, const char *icon){
+
+    TokenArray first_words = gigaStrtok(difference->first, " \n");
+    TokenArray second_words = gigaStrtok(difference->second, " \n");
+    int word_index = -1;
+
+    if (first_words.count == second_words.count){
+        int diff_count = 0;
+        for (size_t i = 0; i < first_words.count; i++)
+        {
+            if (!areStringsEqual(first_words.tokens[i], second_words.tokens[i])) {
+                diff_count ++;
+                word_index = i;
+            };
+        }
+
+        if (diff_count != 1){
+            word_index = -1;
+        }
+
+    }
+    
+    if (difference->first_line_n != 0){
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘 "BLU_TEXT"%s %s 󰞷 %d\n", icon, first_label, difference->first_line_n);
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "CYN_TEXT);
+        for (int i = 0; i < first_words.count; i++)
+        {
+            if (i == word_index) printf(RED_TEXT"»"CYN_TEXT"%s"RED_TEXT"« "CYN_TEXT, first_words.tokens[i]);
+            else printf("%s ", first_words.tokens[i]);
+        }
+    }else{
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘 "BLU_TEXT"%s %s\n", icon, first_label);
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 FINISHED!!"CYN_TEXT);
+    }
+    printf("\n");
+
+    if (difference->second_line_n != 0){
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘 "RED_TEXT"%s %s 󰞷 %d\n", icon, second_label, difference->second_line_n);
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 "YEL_TEXT);
+        for (int i = 0; i < second_words.count; i++)
+        {
+            if (i == word_index) printf(RED_TEXT"»"YEL_TEXT"%s"RED_TEXT"« "YEL_TEXT, second_words.tokens[i]);
+            else printf("%s ", second_words.tokens[i]);
+        }
+    }else{
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘 "RED_TEXT"%s %s\n", icon, second_label);
+        printf(WHT_TEXT"󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 FINISHED!!"YEL_TEXT);
+    }
+    printf("\n"RESET_TEXT);
+
+}
+
+
 CommitDiff *compareTwoCommits(const char *first_commit_hash, const char *second_commit_hash){
     CommitDiff *result = malloc(sizeof(CommitDiff));
     result->commons = NULL;

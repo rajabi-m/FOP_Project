@@ -36,7 +36,7 @@ int GIT_Merge(int argc, char **argv){
     }
 
     CommitDiff *branch_diff = compareTwoCommits(branch1->commit_hash, branch2->commit_hash);
-
+    
     if (!branch_diff){
         printError("error happened while trying to compare two branches!!");
         return EXIT_FAILURE;
@@ -64,6 +64,7 @@ int GIT_Merge(int argc, char **argv){
     Commit *branch1_commit = openCommit(branch1->commit_hash);
     Commit *branch2_commit = openCommit(branch2->commit_hash);
 
+
     int index = 0;
     for (int j = 0; j < branch1_commit->meta_data.files_count; j++)
     {
@@ -88,6 +89,8 @@ int GIT_Merge(int argc, char **argv){
         }
         
     }
+
+
     
     // handling common files
     for (int i = 0; i < branch_diff->commons_n; i++)
@@ -111,7 +114,6 @@ int GIT_Merge(int argc, char **argv){
         }
 
         // writing data on new object file
-        
         // finding the object that is on the current branch last commit
         FILE *current_object = NULL;
         for (int j = 0; j < branch1_commit->meta_data.files_count; j++)
@@ -131,13 +133,12 @@ int GIT_Merge(int argc, char **argv){
         int line_n = 0;
         int diff_index = 0;
         char *res = (char *) 1; // just a temp value
-        while (true)
+        while (true) // if there is any difference
         {
             line_n ++;
 
             if (res != NULL) res = fgets(line, MAX_LINE_LEN, current_object);
-            
-            if (branch_diff->commons[i].diffs.diff[diff_index].first_line_n == line_n){
+            if ((branch_diff->commons[i].diffs.diff_count > diff_index) && (branch_diff->commons[i].diffs.diff[diff_index].first_line_n == line_n)){
                 if (branch_diff->commons[i].diffs.diff[diff_index].second_line_n == 0){
                     // if the line only exists in file 1.
                     fputs(branch_diff->commons[i].diffs.diff[diff_index].first, new_object);
@@ -149,10 +150,13 @@ int GIT_Merge(int argc, char **argv){
                     {
                         char input;
                         printf("󰇘󰇘󰇘󰇘"RED_TEXT"CONFLICT"RESET_TEXT"󰇘󰇘󰇘󰇘<"CYN_TEXT"%s"RESET_TEXT">>>\n", branch_diff->commons[i].file_path);
-                        printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch1_name, branch_diff->commons[i].diffs.diff[diff_index].first_line_n);
-                        printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].first);
-                        printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch2_name, branch_diff->commons[i].diffs.diff[diff_index].second_line_n);
-                        printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].second);
+                        // printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch1_name, branch_diff->commons[i].diffs.diff[diff_index].first_line_n);
+                        // printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].first);
+                        // printf("󰇘󰇘󰇘󰇘 󰜘 %s 󰞷 %d\n", branch2_name, branch_diff->commons[i].diffs.diff[diff_index].second_line_n);
+                        // printf("󰇘󰇘󰇘󰇘󰇘󰇘󰇘󰇘 %s\n", branch_diff->commons[i].diffs.diff[diff_index].second);
+
+                        printDifferences(&branch_diff->commons[i].diffs.diff[diff_index], branch1_name, branch2_name, "");
+
                         printf("<<<"CYN_TEXT"%s"RESET_TEXT">󰇘󰇘󰇘󰇘"RED_TEXT"CONFLICT"RESET_TEXT"󰇘󰇘󰇘󰇘\n", branch_diff->commons[i].file_path);
                         printf("what do you want to do? ->");
                         scanf("\n%c", &input);
@@ -177,7 +181,7 @@ int GIT_Merge(int argc, char **argv){
                             }
                             case 'e':{
                                 char line[MAX_LINE_LEN];
-                                scanf("%s",  line);
+                                scanf("\n%[^\n]",  line);
                                 fprintf(new_object, "%s\n", line);
                                 break;
                             }
