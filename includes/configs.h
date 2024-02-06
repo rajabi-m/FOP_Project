@@ -1,7 +1,7 @@
 #include <linux/limits.h>
 
 // debug
-#define __DEBUG_MODE_
+// #define __DEBUG_MODE_
 
 #ifdef __DEBUG_MODE_
 #define debug(x) printf x

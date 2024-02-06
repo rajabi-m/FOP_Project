@@ -63,6 +63,20 @@ int GIT_Commit(int argc, char **argv){
     }
 
     // TODO: add pre-commit
+    bool pre_commit_res = true;
+    for (int i = 0; i < GIT_stagedfiles_count; i++)
+    {
+        if (GIT_staging_area[i].access_code == -1) continue;
+        pre_commit_res &= checkHooks(&GIT_staging_area[i], false);
+        printf("%d\n", pre_commit_res);
+    }
+
+    if (!pre_commit_res){
+        printError("some hooks failed!\nUse giga-git pre-commit to check which files failed the test.");
+        return EXIT_FAILURE;
+    }
+    
+
 
     time_t current_time;
     time(&current_time);

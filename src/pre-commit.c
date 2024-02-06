@@ -49,13 +49,13 @@ int GIT_PreCommit(int argc, char **argv){
         case 'l':
             for (int i = 0; hooks[i].name; i++)
             {
-                printf("%s\n", hooks[i].name);
+                printf(CYN_TEXT"󰛢"RESET_TEXT" %s\n", hooks[i].name);
             }
             break;
         case 'p':
             for (int i = 0; hooks[i].name; i++)
             {
-                if (hooks[i].enabled) printf("%s\n", hooks[i].name);
+                if (hooks[i].enabled) printf(CYN_TEXT"󰛢"RESET_TEXT" %s\n", hooks[i].name);
             }
             break;
         case 'a':
@@ -66,6 +66,7 @@ int GIT_PreCommit(int argc, char **argv){
                     hooks[i].enabled = true;
                     saveHooks();
                     found = true;
+                    printfSuccess(("Hook enabled."));
                     break;
                 }
             }
@@ -81,6 +82,7 @@ int GIT_PreCommit(int argc, char **argv){
                     hooks[i].enabled = false;
                     saveHooks();
                     found = true;
+                    printfSuccess(("Hook disabled."));
                     break;
                 }
             }
@@ -113,15 +115,18 @@ int GIT_PreCommit(int argc, char **argv){
 }
 
 bool checkHooks(GitFile *git_file, bool print_result){
+    loadHooks();
     bool res = true;
+    if (print_result) printf(CYN_TEXT"󰈔 %s\n"RESET_TEXT, git_file->path);
     for (int i = 0; hooks[i].name; i++)
     {
         if (!hooks[i].enabled) continue;
         bool result = hooks[i].function(git_file);
         res &= result;
-
         if (print_result){
-            printf("%s  -  %s - %d\n", git_file->path, hooks[i].name, result);
+            if (result) printf(GRN_TEXT);
+            else        printf(RED_TEXT);
+            printf("󰛢 %-50s %s\n"RESET_TEXT, hooks[i].name, (result)? "PASSED" : "FAILED");
         }
 
     }
@@ -184,7 +189,7 @@ bool HOOK_FormatCheck(GitFile *git_file){
 }
 
 bool HOOK_TimeLimit(GitFile *git_file){
-    return true; // TODO:
+    return true;
 }
 
 void loadHooks(){

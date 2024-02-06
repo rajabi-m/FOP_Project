@@ -3,18 +3,18 @@
 int doCommand(struct Alias *alias);
 
 
-int main(){
+// int main(){
 
-    char command[] = "giga-git pre-commit";
-    TokenArray tokenized = parseCommand(command);
+//     char command[] = "giga-git pre-commit";
+//     TokenArray tokenized = parseCommand(command);
     
 
-    int argc = tokenized.count;
-    char **argv = tokenized.tokens;
+//     int argc = tokenized.count;
+//     char **argv = tokenized.tokens;
 
-    chdir("../tests");
+//     chdir("../tests");
     
-// int main(int argc, char *argv[]){
+int main(int argc, char *argv[]){
 
     GIT_parent_dir = findGitParentDir();
     debug(("git path = %s\n", GIT_parent_dir));
